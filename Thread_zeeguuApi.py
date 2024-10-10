@@ -28,7 +28,7 @@ if __name__ == "__main__":
             "article_source": 2
         }
     }
-    number_of_threads = 1000
+    number_of_threads = 100
     # Create a barrier for 4 threads
     barrier = threading.Barrier(number_of_threads)
     
