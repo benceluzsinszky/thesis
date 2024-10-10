@@ -1,51 +1,40 @@
 import requests
 import json
-from datetime import datetime,UTC
 
+class ZeeguuApi:
+    def __init__(self, base_url, email, password):
+        self.base_url = base_url
+        self.email = email
+        self.password = password
+        self.session = self.get_user_session()
 
-
-def get_user_session(url, password):
-    
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-        }
-        data = {
-            'password': password
-        }
-        response = requests.post(url, data=data, headers=headers)
-        return response.json()['session']
-        
-   
-
-def send_http_request(url, endpoint, session, body):
-    # Send POST request with the session key as a query parameter
-    response = requests.post(f"{url+endpoint}?session={session}", json=body)
-    return  response.elapsed.microseconds
-   
-
-if __name__ == "__main__":
-    # URL to fetch session/home/robert-sluka/Desktop/ITU/zeeguu-scalability-evaluation/app/src/main/java/org/example/ZeeguuApi.py
-    email = "bluz@itu.dk"
-    url = f"https://api.maxitwit.tech"
-    password = "password"
-    endpoint = "/upload_user_activity_data"
-    session_endpoint =f"/session/{email}"
-
-
-    # Get user session key
-    session = get_user_session(url + session_endpoint, password)
-    print(f"Session Key: {session}")
-    json_body = {
-            "time": "2016-05-05T10:11:12",
-            "event": "User Read Article",
-            "value": "300s",
-            "extra_data": {
-                "article_source": 2
+    def get_user_session(self):
+        try:
+            url = f"{self.base_url}/session/{self.email}"
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
             }
-        }
-    
-    send_http_request(url,endpoint, session, json_body)
+            data = {
+                'password': self.password
+            }
+            response = requests.post(url, data=data, headers=headers)
+            response.raise_for_status()
+            return response.json().get('session')
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
 
-  
-    
+    def send_http_request(self, endpoint, body):
+        try:
+            url = f"{self.base_url}{endpoint}?session={self.session}"
+            headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+            response = requests.post(url, json=body, headers=headers)
+            response.raise_for_status()
+            return response.elapsed.microseconds
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
