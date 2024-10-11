@@ -1,0 +1,23 @@
+{
+    "base_url": "https://api.maxitwit.tech",
+    "email": "bluz@itu.dk",
+    "password": "password",
+    "endpoints":
+    [
+        {
+            "path": "/upload_user_activity_data",
+            "method": "POST",
+            "content-type": "json",
+            "parameters":
+            {
+                "time": "2016-05-05T10:11:12",
+                "event": "User Read Article",
+                "value": "300s",
+                "extra_data": {
+                    "article_source": 2
+                }
+            }
+
+        }
+    ]
+}
