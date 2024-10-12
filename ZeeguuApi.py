@@ -137,6 +137,7 @@ def handle_user_profile():
 
     idx = use_user_profile()
     endpoints = config["user_profiles"][idx]
+    print(f"User Profile: {idx}")
 
     for _ in range(number_of_threads):
         thread = threading.Thread(target=thread_request)
