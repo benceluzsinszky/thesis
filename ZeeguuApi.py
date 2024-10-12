@@ -37,10 +37,11 @@ def send_request(
     try:
         url = f"{BASE_URL}{endpoint}?session={SESSION}"
         headers = {"Content-Type": f"application/{content_type}"}
-        time = datetime.now(UTC)
+        # time = datetime.now(UTC)
         request_method = getattr(requests, request_method.lower())
-        request_method(url, data=parameters, headers=headers)
-        response_time = datetime.now(UTC) - time
+        response = request_method(url, data=parameters, headers=headers)
+        response_time = response.elapsed.total_seconds()
+        # response_time = datetime.now(UTC) - time
         print(f"Respose time for {endpoint}: {response_time} seconds")
         return response_time
 
@@ -206,7 +207,7 @@ def handle_random_endpoints():
     for thread in threads:
         thread.join()
 
-    average_time = sum(elapsed_times, timedelta()) / len(elapsed_times)
+    average_time = sum(elapsed_times) / len(elapsed_times)
     print(f"Average elapsed time: {average_time} seconds")
     median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
     print(f"Median elapsed time: {median_time} seconds")
