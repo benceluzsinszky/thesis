@@ -3,11 +3,13 @@ from datetime import datetime, timedelta, UTC
 import threading
 import json
 import csv
+import random
 
 from args import (
     get_number_of_threads,
     use_endpoint,
     use_user_profile,
+    use_random,
     get_config_path,
 )
 
@@ -27,14 +29,13 @@ def get_user_session(email: str, password: str) -> str:
 
 
 def send_request(
-    session: str,
     request_method: str,
     endpoint: str,
     content_type: str,
     parameters: dict,
 ) -> datetime | None:
     try:
-        url = f"{BASE_URL}{endpoint}?session={session}"
+        url = f"{BASE_URL}{endpoint}?session={SESSION}"
         headers = {"Content-Type": f"application/{content_type}"}
         time = datetime.now(UTC)
         request_method = getattr(requests, request_method.lower())
@@ -53,7 +54,6 @@ def handle_single_endpoint() -> tuple[timedelta, timedelta]:
         barrier.wait()
 
         elapsed_time = send_request(
-            session=session,
             endpoint=path,
             request_method=request_method,
             content_type=content_type,
@@ -68,7 +68,7 @@ def handle_single_endpoint() -> tuple[timedelta, timedelta]:
     barrier = threading.Barrier(number_of_threads)
 
     idx = use_endpoint()
-    endpoint = config["endpoints"][idx]
+    endpoint = CONFIG["endpoints"][idx]
     path = endpoint["path"]
     parameters = endpoint["parameters"]
     request_method = endpoint["method"]
@@ -112,22 +112,21 @@ def handle_user_profile():
     def thread_request():
         barrier.wait()
 
-        for endpoint in endpoints:
+        for idx in endpoints:
+            endpoint = CONFIG["endpoints"][idx]
             path = endpoint["path"]
             request_method = endpoint["method"]
             content_type = endpoint["content_type"]
             parameters = endpoint["parameters"]
 
-        elapsed_time = send_request(
-            session=session,
-            endpoint=path,
-            request_method=request_method,
-            content_type=content_type,
-            parameters=parameters,
-        )
+            elapsed_time = send_request(
+                endpoint=path,
+                request_method=request_method,
+                content_type=content_type,
+                parameters=parameters,
+            )
 
-        print(f"Elapsed Time: {elapsed_time} seconds")
-        elapsed_times.append(elapsed_time)
+            elapsed_times.append(elapsed_time)
 
     timestamp = datetime.now(UTC)
     elapsed_times = []
@@ -136,7 +135,7 @@ def handle_user_profile():
     barrier = threading.Barrier(number_of_threads)
 
     idx = use_user_profile()
-    endpoints = config["user_profiles"][idx]
+    endpoints = CONFIG["user_profiles"][idx]
 
     for _ in range(number_of_threads):
         thread = threading.Thread(target=thread_request)
@@ -172,16 +171,79 @@ def handle_user_profile():
         )
 
 
+def handle_random_endpoints():
+    def thread_request():
+        barrier.wait()
+
+        random_idx = random.randint(0, len(CONFIG["endpoints"]) - 1)
+        endpoint = CONFIG["endpoints"][random_idx]
+
+        path = endpoint["path"]
+        request_method = endpoint["method"]
+        content_type = endpoint["content_type"]
+        parameters = endpoint["parameters"]
+
+        elapsed_time = send_request(
+            endpoint=path,
+            request_method=request_method,
+            content_type=content_type,
+            parameters=parameters,
+        )
+
+        elapsed_times.append(elapsed_time)
+
+    timestamp = datetime.now(UTC)
+    elapsed_times = []
+    threads = []
+    number_of_threads = get_number_of_threads()
+    barrier = threading.Barrier(number_of_threads)
+
+    for _ in range(number_of_threads):
+        thread = threading.Thread(target=thread_request)
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    average_time = sum(elapsed_times, timedelta()) / len(elapsed_times)
+    print(f"Average elapsed time: {average_time} seconds")
+    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
+    print(f"Median elapsed time: {median_time} seconds")
+
+    with open("results_random_endpoint.csv", "a", newline="") as csvfile:
+        fieldnames = [
+            "timestamp_UTC",
+            "load",
+            "average_time",
+            "median_time",
+        ]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writerow(
+            {
+                "timestamp_UTC": timestamp,
+                "load": number_of_threads,
+                "average_time": average_time,
+                "median_time": median_time,
+            }
+        )
+
+
 if __name__ == "__main__":
     with open(CONFIG_PATH) as config_file:
-        config = json.load(config_file)
+        CONFIG = json.load(config_file)
 
-    BASE_URL = config["base_url"]
-    email = config["email"]
-    password = config["password"]
-    session = get_user_session(email, password)
+    BASE_URL = CONFIG["base_url"]
+    email = CONFIG["email"]
+    password = CONFIG["password"]
+    SESSION = get_user_session(email, password)
 
     if use_endpoint() is not None:
         handle_single_endpoint()
-    else:
+    elif use_user_profile() is not None:
         handle_user_profile()
+    elif use_random():
+        handle_random_endpoints()
+    else:
+        print("Add argument -u or -e or -r")

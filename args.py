@@ -16,7 +16,6 @@ parser.add_argument(
     "-u",
     type=int,
     help="Use user profile, use the index of the user profile from the config file",
-    default=0,
 )
 parser.add_argument(
     "--config_path",
@@ -25,7 +24,7 @@ parser.add_argument(
     help="The path to the config file",
     default="config.json",
 )
-
+parser.add_argument("--random", "-r", action="store_true", help="Use random endpoints")
 
 args = parser.parse_args()
 
@@ -40,6 +39,10 @@ def use_endpoint() -> int:
 
 def use_user_profile() -> int:
     return args.user_profile
+
+
+def use_random() -> bool:
+    return args.random
 
 
 def get_config_path() -> str:
