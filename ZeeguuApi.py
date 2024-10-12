@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, UTC
 import threading
 import json
 import csv
@@ -37,11 +37,9 @@ def send_request(
     try:
         url = f"{BASE_URL}{endpoint}?session={SESSION}"
         headers = {"Content-Type": f"application/{content_type}"}
-        # time = datetime.now(UTC)
         request_method = getattr(requests, request_method.lower())
         response = request_method(url, data=parameters, headers=headers)
         response_time = response.elapsed.total_seconds()
-        # response_time = datetime.now(UTC) - time
         print(f"Respose time for {endpoint}: {response_time} seconds")
         return response_time
 
@@ -50,7 +48,15 @@ def send_request(
         return
 
 
-def handle_single_endpoint() -> tuple[timedelta, timedelta]:
+def calculate_averages(elapsed_times: list) -> tuple:
+    average_time = sum(elapsed_times) / len(elapsed_times)
+    print(f"Average elapsed time: {average_time} seconds")
+    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
+    print(f"Median elapsed time: {median_time} seconds")
+    return average_time, median_time
+
+
+def handle_single_endpoint():
     def thread_request():
         barrier.wait()
 
@@ -83,10 +89,7 @@ def handle_single_endpoint() -> tuple[timedelta, timedelta]:
     for thread in threads:
         thread.join()
 
-    average_time = sum(elapsed_times, timedelta()) / len(elapsed_times)
-    print(f"Average elapsed time: {average_time} seconds")
-    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
-    print(f"Median elapsed time: {median_time} seconds")
+    average_time, median_time = calculate_averages(elapsed_times)
 
     with open("results_enpoints.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -146,10 +149,7 @@ def handle_user_profile():
     for thread in threads:
         thread.join()
 
-    average_time = sum(elapsed_times, timedelta()) / len(elapsed_times)
-    print(f"Average elapsed time: {average_time} seconds")
-    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
-    print(f"Median elapsed time: {median_time} seconds")
+    average_time, median_time = calculate_averages(elapsed_times)
 
     with open("results_users.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -207,10 +207,7 @@ def handle_random_endpoints():
     for thread in threads:
         thread.join()
 
-    average_time = sum(elapsed_times) / len(elapsed_times)
-    print(f"Average elapsed time: {average_time} seconds")
-    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
-    print(f"Median elapsed time: {median_time} seconds")
+    average_time, median_time = calculate_averages(elapsed_times)
 
     with open("results_random_endpoint.csv", "a", newline="") as csvfile:
         fieldnames = [
