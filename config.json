@@ -2,14 +2,12 @@
     "base_url": "https://api.maxitwit.tech",
     "email": "bluz@itu.dk",
     "password": "password",
-    "endpoints":
-    [
+    "endpoints": [
         {
             "path": "/upload_user_activity_data",
             "method": "POST",
             "content_type": "json",
-            "parameters":
-            {
+            "parameters": {
                 "time": "2016-05-05T10:11:12",
                 "event": "User Read Article",
                 "value": "300s",
@@ -17,69 +15,70 @@
                     "article_source": 2
                 }
             }
-
         }
     ],
-    "user_profiles":
-    [
+    "user_profiles": [
         [
-                {
-                    "path": "/session/bluz@itu.dk",
-                    "method": "POST",
-                    "content_type": "x-www-form-urlencoded",
-                    "parameters":
-                    {
-                        "password": "password"
-                    }
-                },
-                {
-                    "path": "/session/rslu@itu.dk",
-                    "method": "POST",
-                    "content_type": "x-www-form-urlencoded",
-                    "parameters":
-                    {
-                        "password": "040698"
-                    }
-                },
-
-                {
-                    "path": "/upload_user_activity_data",
-                    "method": "POST",
-                    "content_type": "json",
-                    "parameters":
-                    {
-                        "time": "2016-05-05T10:11:12",
-                        "event": "User Read Article",
-                        "value": "300s",
-                        "extra_data": {
-                            "article_source": 2
-                        }
+            {
+                "path": "/session/bluz@itu.dk",
+                "method": "POST",
+                "content_type": "x-www-form-urlencoded",
+                "parameters": {
+                    "password": "password"
+                }
+            },
+            {
+                "path": "/session/rslu@itu.dk",
+                "method": "POST",
+                "content_type": "x-www-form-urlencoded",
+                "parameters": {
+                    "password": "040698"
+                }
+            },
+            {
+                "path": "/session/lucian.aionicesei@gmail.com",
+                "method": "POST",
+                "content_type": "x-www-form-urlencoded",
+                "parameters": {
+                    "password": "Semestru123"
+                }
+            },
+            {
+                "path": "/upload_user_activity_data",
+                "method": "POST",
+                "content_type": "json",
+                "parameters": {
+                    "time": "2016-05-05T10:11:12",
+                    "event": "User Read Article",
+                    "value": "300s",
+                    "extra_data": {
+                        "article_source": 2
                     }
                 }
-            ],[
-                {
-                    "path": "/session/bluz@itu.dk",
-                    "method": "POST",
-                    "content_type": "x-www-form-urlencoded",
-                    "parameters":
-                    {
-                        "password": "password"
-                    }
-                },
-                {
-                    "path": "/upload_user_activity_data",
-                    "method": "POST",
-                    "content_type": "json",
-                    "parameters":
-                    {
-                        "time": "2016-05-05T10:11:12",
-                        "event": "User Read Article",
-                        "value": "300s",
-                        "extra_data": {
-                            "article_source": 2
-                        }
+            }
+        ],
+        [
+            {
+                "path": "/session/bluz@itu.dk",
+                "method": "POST",
+                "content_type": "x-www-form-urlencoded",
+                "parameters": {
+                    "password": "password"
+                }
+            },
+            {
+                "path": "/upload_user_activity_data",
+                "method": "POST",
+                "content_type": "json",
+                "parameters": {
+                    "time": "2016-05-05T10:11:12",
+                    "event": "User Read Article",
+                    "value": "300s",
+                    "extra_data": {
+                        "article_source": 2
                     }
                 }
-            ]
+            }
+        ]
     ]
 }
