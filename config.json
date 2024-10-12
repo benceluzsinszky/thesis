@@ -33,6 +33,16 @@
                     }
                 },
                 {
+                    "path": "/session/rslu@itu.dk",
+                    "method": "POST",
+                    "content_type": "x-www-form-urlencoded",
+                    "parameters":
+                    {
+                        "password": "040698"
+                    }
+                },
+
+                {
                     "path": "/upload_user_activity_data",
                     "method": "POST",
                     "content_type": "json",
