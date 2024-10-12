@@ -7,7 +7,7 @@
         {
             "path": "/upload_user_activity_data",
             "method": "POST",
-            "content-type": "json",
+            "content_type": "json",
             "parameters":
             {
                 "time": "2016-05-05T10:11:12",
@@ -22,26 +22,20 @@
     ],
     "user_profiles":
     [
-        {
-            "user_1":[
+        [
                 {
-                    "path": "/upload_user_activity_data",
+                    "path": "/session/bluz@itu.dk",
                     "method": "POST",
-                    "content-type": "json",
+                    "content_type": "x-www-form-urlencoded",
                     "parameters":
                     {
-                        "time": "2016-05-05T10:11:12",
-                        "event": "User Read Article",
-                        "value": "300s",
-                        "extra_data": {
-                            "article_source": 2
-                        }
+                        "password": "password"
                     }
                 },
                 {
                     "path": "/upload_user_activity_data",
                     "method": "POST",
-                    "content-type": "json",
+                    "content_type": "json",
                     "parameters":
                     {
                         "time": "2016-05-05T10:11:12",
@@ -52,26 +46,20 @@
                         }
                     }
                 }
-            ],
-            "user_2":[
+            ],[
                 {
-                    "path": "/upload_user_activity_data",
+                    "path": "/session/bluz@itu.dk",
                     "method": "POST",
-                    "content-type": "json",
+                    "content_type": "x-www-form-urlencoded",
                     "parameters":
                     {
-                        "time": "2016-05-05T10:11:12",
-                        "event": "User Read Article",
-                        "value": "300s",
-                        "extra_data": {
-                            "article_source": 2
-                        }
+                        "password": "password"
                     }
                 },
                 {
                     "path": "/upload_user_activity_data",
                     "method": "POST",
-                    "content-type": "json",
+                    "content_type": "json",
                     "parameters":
                     {
                         "time": "2016-05-05T10:11:12",
@@ -83,6 +71,5 @@
                     }
                 }
             ]
-        }
     ]
 }

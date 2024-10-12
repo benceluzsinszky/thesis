@@ -2,10 +2,21 @@ import requests
 from datetime import datetime, timedelta, UTC
 import threading
 import json
+import csv
+
+from args import (
+    get_number_of_threads,
+    use_endpoint,
+    use_user_profile,
+    get_config_path,
+)
+
+NUMBER_OF_THREADS = get_number_of_threads()
+CONFIG_PATH = get_config_path()
 
 
-def get_user_session(base_url: str, email: str, password: str) -> str:
-    url = f"{base_url}/session/{email}"
+def get_user_session(email: str, password: str) -> str:
+    url = f"{BASE_URL}/session/{email}"
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
     }
@@ -15,80 +26,162 @@ def get_user_session(base_url: str, email: str, password: str) -> str:
     return response.json()["session"]
 
 
-def thread_request(
-    barrier: threading.Barrier,
+def send_request(
     session: str,
     request_method: str,
-    content_type: str,
-    base_url: str,
     endpoint: str,
+    content_type: str,
     parameters: dict,
-    elapsed_times: list,
-):
-    barrier.wait()
-
+) -> datetime | None:
     try:
-        url = f"{base_url}{endpoint}?session={session}"
+        url = f"{BASE_URL}{endpoint}?session={session}"
         headers = {"Content-Type": f"application/{content_type}"}
         time = datetime.now(UTC)
-
         request_method = getattr(requests, request_method.lower())
         request_method(url, data=parameters, headers=headers)
+        response_time = datetime.now(UTC) - time
+        print(f"Respose time for {endpoint}: {response_time} seconds")
+        return response_time
 
-        elapsed_time = datetime.now(UTC) - time
     except Exception as e:
         print(f"An error occurred: {e}")
         return
 
-    print(f"Elapsed Time: {elapsed_time} seconds")
-    elapsed_times.append(elapsed_time)
 
+def handle_single_endpoint() -> tuple[timedelta, timedelta]:
+    def thread_request():
+        barrier.wait()
 
-if __name__ == "__main__":
-    with open("config.json") as config_file:
-        config = json.load(config_file)
+        elapsed_time = send_request(
+            session=session,
+            endpoint=path,
+            request_method=request_method,
+            content_type=content_type,
+            parameters=parameters,
+        )
+        elapsed_times.append(elapsed_time)
 
-    base_url = config["base_url"]
-    email = config["email"]
-    password = config["password"]
-
-    session = get_user_session(base_url, email, password)
-
+    timestamp = datetime.now(UTC)
     elapsed_times = []
-
-    number_of_threads = 100
+    threads = []
+    number_of_threads = get_number_of_threads()
     barrier = threading.Barrier(number_of_threads)
 
-    threads = []
-
-    endpoint = config["endpoints"][0]
-
+    idx = use_endpoint()
+    endpoint = config["endpoints"][idx]
     path = endpoint["path"]
     parameters = endpoint["parameters"]
     request_method = endpoint["method"]
     content_type = endpoint["content_type"]
 
-    for i in range(number_of_threads):
-        thread = threading.Thread(
-            target=thread_request,
-            args=(
-                barrier,
-                session,
-                request_method,
-                content_type,
-                base_url,
-                path,
-                parameters,
-                elapsed_times,
-            ),
-        )
+    for _ in range(number_of_threads):
+        thread = threading.Thread(target=thread_request)
         threads.append(thread)
         thread.start()
 
     for thread in threads:
         thread.join()
 
-    average_elapsed_time = sum(elapsed_times, timedelta()) / len(elapsed_times)
-    print(f"Average elapsed time: {average_elapsed_time} seconds")
-    median_elapsed_time = sorted(elapsed_times)[len(elapsed_times) // 2]
-    print(f"Median elapsed time: {median_elapsed_time} seconds")
+    average_time = sum(elapsed_times, timedelta()) / len(elapsed_times)
+    print(f"Average elapsed time: {average_time} seconds")
+    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
+    print(f"Median elapsed time: {median_time} seconds")
+
+    with open("results_enpoints.csv", "a", newline="") as csvfile:
+        fieldnames = [
+            "timestamp_UTC",
+            "endpoint",
+            "load",
+            "average_time",
+            "median_time",
+        ]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writerow(
+            {
+                "timestamp_UTC": timestamp,
+                "endpoint": endpoint["path"],
+                "load": number_of_threads,
+                "average_time": average_time,
+                "median_time": median_time,
+            }
+        )
+
+
+def handle_user_profile():
+    def thread_request():
+        barrier.wait()
+
+        for endpoint in endpoints:
+            path = endpoint["path"]
+            request_method = endpoint["method"]
+            content_type = endpoint["content_type"]
+            parameters = endpoint["parameters"]
+
+        elapsed_time = send_request(
+            session=session,
+            endpoint=path,
+            request_method=request_method,
+            content_type=content_type,
+            parameters=parameters,
+        )
+
+        print(f"Elapsed Time: {elapsed_time} seconds")
+        elapsed_times.append(elapsed_time)
+
+    timestamp = datetime.now(UTC)
+    elapsed_times = []
+    threads = []
+    number_of_threads = get_number_of_threads()
+    barrier = threading.Barrier(number_of_threads)
+
+    idx = use_user_profile()
+    endpoints = config["user_profiles"][idx]
+
+    for _ in range(number_of_threads):
+        thread = threading.Thread(target=thread_request)
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    average_time = sum(elapsed_times, timedelta()) / len(elapsed_times)
+    print(f"Average elapsed time: {average_time} seconds")
+    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
+    print(f"Median elapsed time: {median_time} seconds")
+
+    with open("results_users.csv", "a", newline="") as csvfile:
+        fieldnames = [
+            "timestamp_UTC",
+            "user_profile",
+            "load",
+            "average_time",
+            "median_time",
+        ]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writerow(
+            {
+                "timestamp_UTC": timestamp,
+                "user_profile": idx,
+                "load": number_of_threads,
+                "average_time": average_time,
+                "median_time": median_time,
+            }
+        )
+
+
+if __name__ == "__main__":
+    with open(CONFIG_PATH) as config_file:
+        config = json.load(config_file)
+
+    BASE_URL = config["base_url"]
+    email = config["email"]
+    password = config["password"]
+    session = get_user_session(email, password)
+
+    if use_endpoint() is not None:
+        handle_single_endpoint()
+    else:
+        handle_user_profile()
