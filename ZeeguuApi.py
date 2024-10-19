@@ -43,21 +43,33 @@ def send_request(
             return
         response_time = response.elapsed.total_seconds()
         print(f"Respose time for {endpoint}: {response_time} seconds")
-        return response_time
+        data = [response_time, datetime.now(UTC)]
+        return data
 
     except Exception as e:
         print(f"An error occurred: {e}")
         return
 
 
-def calculate_metrics(timedelta: datetime, elapsed_times: list) -> tuple:
+def calculate_metrics(resonse_datas: list) -> tuple:
+    elapsed_times = [data[0] for data in resonse_datas]
+    timedelta = (resonse_datas[-1][1] - resonse_datas[0][1]).total_seconds()
+
+    metrics = {}
+
     average_time = sum(elapsed_times) / len(elapsed_times)
+    metrics["average_time"] = average_time
     print(f"Average elapsed time: {average_time} seconds")
+
     median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
+    metrics["median_time"] = median_time
     print(f"Median elapsed time: {median_time} seconds")
-    throughput = len(elapsed_times) / timedelta.total_seconds()
+
+    throughput = len(elapsed_times) / timedelta
+    metrics["throughput"] = throughput
     print(f"Throughput: {throughput} transactions per second")
-    return throughput, average_time, median_time
+
+    return metrics
 
 
 def handle_single_endpoint():
@@ -196,17 +208,18 @@ def handle_random_endpoints():
         content_type = endpoint["content_type"]
         parameters = endpoint["parameters"]
 
-        elapsed_time = send_request(
+        response_data = send_request(
             endpoint=path,
             request_method=request_method,
             content_type=content_type,
             parameters=parameters,
         )
 
-        elapsed_times.append(elapsed_time)
+        if response_data is not None:
+            response_datas.append(response_data)
 
     timestamp = datetime.now(UTC)
-    elapsed_times = []
+    response_datas = []
     threads = []
     number_of_threads = get_number_of_threads()
     barrier = threading.Barrier(number_of_threads)
@@ -219,9 +232,7 @@ def handle_random_endpoints():
     for thread in threads:
         thread.join()
 
-    timedelta = datetime.now(UTC) - timestamp
-
-    throughput, average_time, median_time = calculate_metrics(timedelta, elapsed_times)
+    metrics = calculate_metrics(response_datas)
 
     with open("results_random_endpoint.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -237,9 +248,9 @@ def handle_random_endpoints():
             {
                 "timestamp_UTC": timestamp,
                 "load": number_of_threads,
-                "average_time": average_time,
-                "median_time": median_time,
-                "throughput": throughput,
+                "average_time": metrics["average_time"],
+                "median_time": metrics["median_time"],
+                "throughput": metrics["throughput"],
             }
         )
 
