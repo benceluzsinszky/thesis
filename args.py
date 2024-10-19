@@ -5,6 +5,15 @@ parser = argparse.ArgumentParser(description="Process some integers.")
 parser.add_argument(
     "--threads", "-t", type=int, help="The number of threads", default=1
 )
+
+parser.add_argument(
+    "--loops",
+    "-l",
+    type=int,
+    help="The number of times the simulator will run",
+    default=1,
+)
+
 parser.add_argument(
     "--endpoint",
     "-e",
@@ -31,6 +40,10 @@ args = parser.parse_args()
 
 def get_number_of_threads() -> int:
     return args.threads
+
+
+def get_number_of_loops() -> int:
+    return args.loops
 
 
 def use_endpoint() -> int:

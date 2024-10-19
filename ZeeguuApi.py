@@ -7,6 +7,7 @@ import random
 
 from args import (
     get_number_of_threads,
+    get_number_of_loops,
     use_endpoint,
     use_user_profile,
     use_random,
@@ -264,11 +265,13 @@ if __name__ == "__main__":
     password = CONFIG["password"]
     SESSION = get_user_session(email, password)
 
-    if use_endpoint() is not None:
-        handle_single_endpoint()
-    elif use_user_profile() is not None:
-        handle_user_profile()
-    elif use_random():
-        handle_random_endpoints()
-    else:
-        print("Add argument -u or -e or -r")
+    for _ in range(get_number_of_loops()):
+        if use_endpoint() is not None:
+            handle_single_endpoint()
+        elif use_user_profile() is not None:
+            handle_user_profile()
+        elif use_random():
+            handle_random_endpoints()
+        else:
+            print("Add argument -u or -e or -r")
+            break
