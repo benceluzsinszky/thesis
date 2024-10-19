@@ -38,7 +38,9 @@ def send_request(
         url = f"{BASE_URL}{endpoint}?session={SESSION}"
         headers = {"Content-Type": f"application/{content_type}"}
         request_method = getattr(requests, request_method.lower())
-        response = request_method(url, data=parameters, headers=headers)
+        response = request_method(url, data=parameters, headers=headers)  #
+        if response.status_code != 200:
+            return
         response_time = response.elapsed.total_seconds()
         print(f"Respose time for {endpoint}: {response_time} seconds")
         return response_time
@@ -48,12 +50,14 @@ def send_request(
         return
 
 
-def calculate_averages(elapsed_times: list) -> tuple:
+def calculate_metrics(timedelta: datetime, elapsed_times: list) -> tuple:
     average_time = sum(elapsed_times) / len(elapsed_times)
     print(f"Average elapsed time: {average_time} seconds")
     median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
     print(f"Median elapsed time: {median_time} seconds")
-    return average_time, median_time
+    throughput = len(elapsed_times) / timedelta.total_seconds()
+    print(f"Throughput: {throughput} transactions per second")
+    return throughput, average_time, median_time
 
 
 def handle_single_endpoint():
@@ -89,7 +93,9 @@ def handle_single_endpoint():
     for thread in threads:
         thread.join()
 
-    average_time, median_time = calculate_averages(elapsed_times)
+    timedelta = datetime.now(UTC) - timestamp
+
+    throughput, average_time, median_time = calculate_metrics(timedelta, elapsed_times)
 
     with open("results_enpoints.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -98,6 +104,7 @@ def handle_single_endpoint():
             "load",
             "average_time",
             "median_time",
+            "throughput",
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -108,6 +115,7 @@ def handle_single_endpoint():
                 "load": number_of_threads,
                 "average_time": average_time,
                 "median_time": median_time,
+                "throughput": throughput,
             }
         )
 
@@ -149,7 +157,9 @@ def handle_user_profile():
     for thread in threads:
         thread.join()
 
-    average_time, median_time = calculate_averages(elapsed_times)
+    timedelta = datetime.now(UTC) - timestamp
+
+    throughput, average_time, median_time = calculate_metrics(timedelta, elapsed_times)
 
     with open("results_users.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -158,6 +168,7 @@ def handle_user_profile():
             "load",
             "average_time",
             "median_time",
+            "throughput",
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -168,6 +179,7 @@ def handle_user_profile():
                 "load": number_of_threads,
                 "average_time": average_time,
                 "median_time": median_time,
+                "throughput": throughput,
             }
         )
 
@@ -207,7 +219,9 @@ def handle_random_endpoints():
     for thread in threads:
         thread.join()
 
-    average_time, median_time = calculate_averages(elapsed_times)
+    timedelta = datetime.now(UTC) - timestamp
+
+    throughput, average_time, median_time = calculate_metrics(timedelta, elapsed_times)
 
     with open("results_random_endpoint.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -215,6 +229,7 @@ def handle_random_endpoints():
             "load",
             "average_time",
             "median_time",
+            "throughput",
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -224,6 +239,7 @@ def handle_random_endpoints():
                 "load": number_of_threads,
                 "average_time": average_time,
                 "median_time": median_time,
+                "throughput": throughput,
             }
         )
 
