@@ -1,1 +1,2 @@
-timestamp,enpoint,load,average_time,median_time,throughput
+timestamp,enpoint,load,average_time,median_time,throughput2024-10-19 14:27:54.251463+00:00,/upload_user_activity_data,2,0.4650615,0.465786,938.5265133740028
+2024-10-19 14:28:05.991323+00:00,/upload_user_activity_data,2,0.4402545,0.445835,93.36196433572962

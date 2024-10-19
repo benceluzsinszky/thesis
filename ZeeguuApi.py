@@ -105,9 +105,7 @@ def handle_single_endpoint():
     for thread in threads:
         thread.join()
 
-    timedelta = datetime.now(UTC) - timestamp
-
-    throughput, average_time, median_time = calculate_metrics(timedelta, elapsed_times)
+    metrics = calculate_metrics(elapsed_times)
 
     with open("results_enpoints.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -125,9 +123,9 @@ def handle_single_endpoint():
                 "timestamp_UTC": timestamp,
                 "endpoint": endpoint["path"],
                 "load": number_of_threads,
-                "average_time": average_time,
-                "median_time": median_time,
-                "throughput": throughput,
+                "average_time": metrics["average_time"],
+                "median_time": metrics["median_time"],
+                "throughput": metrics["throughput"],
             }
         )
 
@@ -169,9 +167,7 @@ def handle_user_profile():
     for thread in threads:
         thread.join()
 
-    timedelta = datetime.now(UTC) - timestamp
-
-    throughput, average_time, median_time = calculate_metrics(timedelta, elapsed_times)
+    metrics = calculate_metrics(elapsed_times)
 
     with open("results_users.csv", "a", newline="") as csvfile:
         fieldnames = [
@@ -189,9 +185,9 @@ def handle_user_profile():
                 "timestamp_UTC": timestamp,
                 "user_profile": idx,
                 "load": number_of_threads,
-                "average_time": average_time,
-                "median_time": median_time,
-                "throughput": throughput,
+                "average_time": metrics["average_time"],
+                "median_time": metrics["median_time"],
+                "throughput": metrics["throughput"],
             }
         )
 
