@@ -52,10 +52,11 @@ def send_request(
 
 
 def calculate_metrics(resonse_datas: list) -> tuple:
+    metrics = {}
+
     elapsed_times = [data[0] for data in resonse_datas]
     timedelta = (resonse_datas[-1][1] - resonse_datas[0][1]).total_seconds()
-
-    metrics = {}
+    print(f"Time elapsed: {timedelta} seconds")
 
     average_time = sum(elapsed_times) / len(elapsed_times)
     metrics["average_time"] = average_time
@@ -64,6 +65,9 @@ def calculate_metrics(resonse_datas: list) -> tuple:
     median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
     metrics["median_time"] = median_time
     print(f"Median elapsed time: {median_time} seconds")
+
+    if timedelta < 1:
+        timedelta = 1
 
     throughput = len(elapsed_times) / timedelta
     metrics["throughput"] = throughput
