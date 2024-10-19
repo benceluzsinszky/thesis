@@ -35,6 +35,14 @@ parser.add_argument(
 )
 parser.add_argument("--random", "-r", action="store_true", help="Use random endpoints")
 
+parser.add_argument(
+    "--csv_file",
+    "-f",
+    type=str,
+    help="The path to the csv file",
+    default="results_random_endpoint.csv",
+)
+
 args = parser.parse_args()
 
 
@@ -60,3 +68,7 @@ def use_random() -> bool:
 
 def get_config_path() -> str:
     return args.config_path
+
+
+def get_csv_file_path() -> str:
+    return args.csv_file

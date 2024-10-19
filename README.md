@@ -8,10 +8,12 @@ The output of the program are .csv files with the measured averrage response tim
 
 ## Prerequisites
 
-To run the program you need Python 3 available with the requests package installed:
+To run the program you need Python 3 available with the packages below installed:
 
 ```bash
 pip install requests
+pip install pandas
+pip install matplotlib
 ```
 
 ## Running the program
