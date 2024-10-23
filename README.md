@@ -22,10 +22,12 @@ The program uses arguments to run. The arguments are as follows:
 
 - `--threads` or `-t`: The number of threads to use. Default is 1.
 - `--loops` or `-l`: The number of times the simulation will run. Default is 1.
+- `--workflow` or `-w`: The simulator runs multiple times with increasing number of threads. Can be combined with `--loops`.
 - `--endpoint` or `-e`: Use a single endpoint. Provide the index of the endpoint from the config file.
 - `--user_profile` or `-u`: Use a user profile. Provide the index of the user profile from the config file. Default is 0.
 - `--random` or `-r`: Use random endpoints. Default is False.
 - `--config_path` or `-c`: The path to the config file. Default is "config.json".
+- `--csv_file` or `-f`: Save the results to a .csv file. Default is False.
 
 Example usage:
 
