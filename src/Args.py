@@ -15,6 +15,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--workflow",
+    "-w",
+    help="Use workflow, run the simulator multiple times with increasing number of threads",
+    action="store_true",
+)
+
+parser.add_argument(
     "--endpoint",
     "-e",
     type=int,
@@ -38,9 +45,7 @@ parser.add_argument("--random", "-r", action="store_true", help="Use random endp
 parser.add_argument(
     "--csv_file",
     "-f",
-    type=str,
-    help="The path to the csv file",
-    default="results_random_endpoint.csv",
+    help="Create an output .csv file",
 )
 
 args = parser.parse_args()
@@ -52,6 +57,10 @@ def get_number_of_threads() -> int:
 
 def get_number_of_loops() -> int:
     return args.loops
+
+
+def use_workflow() -> bool:
+    return args.workflow
 
 
 def use_endpoint() -> int:
@@ -70,5 +79,5 @@ def get_config_path() -> str:
     return args.config_path
 
 
-def get_csv_file_path() -> str:
+def use_csv_file() -> str:
     return args.csv_file

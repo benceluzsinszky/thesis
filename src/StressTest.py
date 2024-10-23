@@ -1,21 +1,24 @@
 import requests
 from datetime import datetime, UTC
 import threading
-import json
+import pandas as pd
 import csv
 import random
 
-from args import (
+from Args import (
     get_number_of_threads,
     get_number_of_loops,
+    use_workflow,
     use_endpoint,
     use_user_profile,
     use_random,
     get_config_path,
+    use_csv_file,
 )
 
-NUMBER_OF_THREADS = get_number_of_threads()
-CONFIG_PATH = get_config_path()
+from FileIO import load_config_file, write_to_csv
+
+from Visualizer import visualize
 
 
 def get_user_session(email: str, password: str) -> str:
@@ -52,27 +55,42 @@ def send_request(
         return
 
 
-def calculate_metrics(resonse_datas: list) -> tuple:
-    metrics = {}
+def calculate_metrics(response_datas: list, test_type: str) -> pd.DataFrame:
+    metrics = pd.DataFrame(
+        columns=[
+            "timestamp",
+            "test_type",
+            "load",
+            "average_latency",
+            "median_latency",
+            "throughput",
+        ]
+    )
 
-    elapsed_times = [data[0] for data in resonse_datas]
-    timedelta = (resonse_datas[-1][1] - resonse_datas[0][1]).total_seconds()
+    elapsed_times = [data[0] for data in response_datas]
+    timedelta = (response_datas[-1][1] - response_datas[0][1]).total_seconds()
     print(f"Time elapsed: {timedelta} seconds")
 
-    average_time = sum(elapsed_times) / len(elapsed_times)
-    metrics["average_time"] = average_time
-    print(f"Average elapsed time: {average_time} seconds")
+    average_latency = sum(elapsed_times) / len(elapsed_times)
+    print(f"Average elapsed time: {average_latency} seconds")
 
-    median_time = sorted(elapsed_times)[len(elapsed_times) // 2]
-    metrics["median_time"] = median_time
-    print(f"Median elapsed time: {median_time} seconds")
+    median_latency = sorted(elapsed_times)[len(elapsed_times) // 2]
+    print(f"Median elapsed time: {median_latency} seconds")
 
     if timedelta < 1:
         timedelta = 1
 
     throughput = len(elapsed_times) / timedelta
-    metrics["throughput"] = throughput
     print(f"Throughput: {throughput} transactions per second")
+
+    metrics.loc[0] = [
+        pd.Timestamp.now(),
+        test_type,
+        NUMBER_OF_THREADS,
+        average_latency,
+        median_latency,
+        throughput,
+    ]
 
     return metrics
 
@@ -219,13 +237,12 @@ def handle_random_endpoints():
         if response_data is not None:
             response_datas.append(response_data)
 
-    timestamp = datetime.now(UTC)
     response_datas = []
     threads = []
-    number_of_threads = get_number_of_threads()
-    barrier = threading.Barrier(number_of_threads)
 
-    for _ in range(number_of_threads):
+    barrier = threading.Barrier(NUMBER_OF_THREADS)
+
+    for _ in range(NUMBER_OF_THREADS):
         thread = threading.Thread(target=thread_request)
         threads.append(thread)
         thread.start()
@@ -233,45 +250,93 @@ def handle_random_endpoints():
     for thread in threads:
         thread.join()
 
-    metrics = calculate_metrics(response_datas)
+    metrics = calculate_metrics(response_datas=response_datas, test_type="random")
 
-    with open("results_random_endpoint.csv", "a", newline="") as csvfile:
-        fieldnames = [
-            "timestamp_UTC",
-            "load",
-            "average_time",
-            "median_time",
-            "throughput",
-        ]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writerow(
-            {
-                "timestamp_UTC": timestamp,
-                "load": number_of_threads,
-                "average_time": metrics["average_time"],
-                "median_time": metrics["median_time"],
-                "throughput": metrics["throughput"],
-            }
-        )
+    return metrics
 
 
 if __name__ == "__main__":
-    with open(CONFIG_PATH) as config_file:
-        CONFIG = json.load(config_file)
+    NUMBER_OF_THREADS = get_number_of_threads()
+    CONFIG_PATH = get_config_path()
+    CONFIG = load_config_file(CONFIG_PATH)
+
+    WORKFLOW_THREADS = [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        30,
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        65,
+        70,
+        75,
+        80,
+        85,
+        90,
+        95,
+        100,
+    ]
 
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
     password = CONFIG["password"]
     SESSION = get_user_session(email, password)
 
-    for _ in range(get_number_of_loops()):
-        if use_endpoint() is not None:
-            handle_single_endpoint()
-        elif use_user_profile() is not None:
-            handle_user_profile()
-        elif use_random():
-            handle_random_endpoints()
-        else:
-            print("Add argument -u or -e or -r")
-            break
+    df = pd.DataFrame(
+        columns=[
+            "timestamp",
+            "test_type",
+            "load",
+            "average_latency",
+            "median_latency",
+            "throughput",
+        ]
+    )
+
+    if use_workflow() is None:
+        WORKFLOW_THREADS = [NUMBER_OF_THREADS]
+
+    for threads in WORKFLOW_THREADS:
+        NUMBER_OF_THREADS = threads
+        for _ in range(get_number_of_loops()):
+            if use_endpoint() is not None:
+                handle_single_endpoint()
+            elif use_user_profile() is not None:
+                handle_user_profile()
+            elif use_random():
+                data = handle_random_endpoints()
+                df = pd.concat([df, data], ignore_index=True)
+            else:
+                print("Add argument -u or -e or -r")
+                break
+
+    if use_csv_file() is not None:
+        write_to_csv(df)
+
+    visualize(df)
