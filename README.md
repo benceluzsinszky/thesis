@@ -8,12 +8,10 @@ The output of the program are .csv files with the measured averrage response tim
 
 ## Prerequisites
 
-To run the program you need Python 3 available with the packages below installed:
+To run the program you need Python 3 available with the packages listed in `requirements.txt` installed:
 
 ```bash
-pip install requests
-pip install pandas
-pip install matplotlib
+pip install -r requirements.txt
 ```
 
 ## Running the program
@@ -29,11 +27,11 @@ The program uses arguments to run. The arguments are as follows:
 - `--config_path` or `-c`: The path to the config file. Default is "config.json".
 - `--no_save` or `-ns`: Don't save the results to a .csv file.
 
-Example usage (run workflow with 5 loops and random endpoints):
+Example usage (run workflow with random endpoints, 5 loops and 5 threads):
 
 ```bash
 cd src
-python StressTest.py -w -r -l 5
+python StressTest.py -w -r -l 5 -t 5
 ```
 
 Increase the number of threads and observer the change in the outoput .csv files or in the print statements.
