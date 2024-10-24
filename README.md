@@ -30,8 +30,7 @@ The program uses arguments to run. The arguments are as follows:
 Example usage (run workflow with random endpoints, 5 loops and 5 threads):
 
 ```bash
-cd src
-python StressTest.py -w -r -l 5 -t 5
+python src/StressTest.py -w -r -l 5 -t 5
 ```
 
 Increase the number of threads and observer the change in the outoput .csv files or in the print statements.
