@@ -4,6 +4,7 @@ import threading
 import pandas as pd
 import csv
 import random
+import tqdm
 
 from Args import (
     get_number_of_threads,
@@ -255,78 +256,75 @@ if __name__ == "__main__":
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
 
-    WORKFLOW_THREADS = [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21,
-        22,
-        23,
-        24,
-        25,
-        30,
-        35,
-        40,
-        45,
-        50,
-        60,
-        70,
-        80,
-        90,
-        100,
-        125,
-        150,
-    ]
+    WORKFLOW_THREADS = [1, 5, 10]
+
+    # WORKFLOW_THREADS = [
+    #     1,
+    #     2,
+    #     3,
+    #     4,
+    #     5,
+    #     6,
+    #     7,
+    #     8,
+    #     9,
+    #     10,
+    #     11,
+    #     12,
+    #     13,
+    #     14,
+    #     15,
+    #     16,
+    #     17,
+    #     18,
+    #     19,
+    #     20,
+    #     21,
+    #     22,
+    #     23,
+    #     24,
+    #     25,
+    #     30,
+    #     35,
+    #     40,
+    #     45,
+    #     50,
+    #     60,
+    #     70,
+    #     80,
+    #     90,
+    #     100,
+    #     125,
+    #     150,
+    # ]
 
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
     password = CONFIG["password"]
     SESSION = get_user_session(email, password)
 
-    df = pd.DataFrame(
-        columns=[
-            "timestamp",
-            "test_type",
-            "load",
-            "average_latency",
-            "median_latency",
-            "throughput",
-        ]
-    )
+    df = pd.DataFrame()
 
     if not use_workflow():
         WORKFLOW_THREADS = [NUMBER_OF_THREADS]
 
-    for threads in WORKFLOW_THREADS:
-        NUMBER_OF_THREADS = threads
-        for _ in range(get_number_of_loops()):
-            if use_endpoint() is not None:
-                handle_single_endpoint()
-            elif use_user_profile() is not None:
-                handle_user_profile()
-            elif use_random():
-                data = handle_random_endpoints()
-                df = pd.concat([df, data], ignore_index=True)
-            else:
-                print("Add argument -u or -e or -r")
-                break
+    total_iterations = len(WORKFLOW_THREADS) * get_number_of_loops()
+
+    with tqdm.tqdm(total=total_iterations, desc="Progress:") as pbar:
+        for threads in WORKFLOW_THREADS:
+            NUMBER_OF_THREADS = threads
+            for _ in range(get_number_of_loops()):
+                if use_endpoint() is not None:
+                    handle_single_endpoint()
+                elif use_user_profile() is not None:
+                    handle_user_profile()
+                elif use_random():
+                    data = handle_random_endpoints()
+                    df = pd.concat([df, data], ignore_index=True)
+                else:
+                    print("Add argument -u or -e or -r")
+                    break
+                pbar.update(1)
 
     if use_csv_file():
         write_to_csv(df)
