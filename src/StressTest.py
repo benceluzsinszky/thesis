@@ -316,7 +316,7 @@ if __name__ == "__main__":
         ]
     )
 
-    if use_workflow() is None:
+    if not use_workflow():
         WORKFLOW_THREADS = [NUMBER_OF_THREADS]
 
     for threads in WORKFLOW_THREADS:
@@ -333,7 +333,7 @@ if __name__ == "__main__":
                 print("Add argument -u or -e or -r")
                 break
 
-    if use_csv_file() is not None:
+    if use_csv_file():
         write_to_csv(df)
 
     visualize(df)

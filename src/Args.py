@@ -43,9 +43,10 @@ parser.add_argument(
 parser.add_argument("--random", "-r", action="store_true", help="Use random endpoints")
 
 parser.add_argument(
-    "--csv_file",
-    "-f",
-    help="Create an output .csv file",
+    "--no_save",
+    "-ns",
+    help="Don't save the output .csv file",
+    action="store_true",
 )
 
 args = parser.parse_args()
@@ -80,4 +81,4 @@ def get_config_path() -> str:
 
 
 def use_csv_file() -> str:
-    return args.csv_file
+    return not args.no_save

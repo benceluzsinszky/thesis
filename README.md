@@ -27,7 +27,7 @@ The program uses arguments to run. The arguments are as follows:
 - `--user_profile` or `-u`: Use a user profile. Provide the index of the user profile from the config file. Default is 0.
 - `--random` or `-r`: Use random endpoints. Default is False.
 - `--config_path` or `-c`: The path to the config file. Default is "config.json".
-- `--csv_file` or `-f`: Save the results to a .csv file. Default is False.
+- `--no_save` or `-ns`: Don't save the results to a .csv file.
 
 Example usage (run workflow with 5 loops and random endpoints):
 
