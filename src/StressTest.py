@@ -46,7 +46,6 @@ def send_request(
         if response.status_code != 200:
             return
         response_time = response.elapsed.total_seconds()
-        print(f"Respose time for {endpoint}: {response_time} seconds")
         data = [response_time, datetime.now(UTC)]
         return data
 
@@ -69,19 +68,15 @@ def calculate_metrics(response_datas: list, test_type: str) -> pd.DataFrame:
 
     elapsed_times = [data[0] for data in response_datas]
     timedelta = (response_datas[-1][1] - response_datas[0][1]).total_seconds()
-    print(f"Time elapsed: {timedelta} seconds")
 
     average_latency = sum(elapsed_times) / len(elapsed_times)
-    print(f"Average elapsed time: {average_latency} seconds")
 
     median_latency = sorted(elapsed_times)[len(elapsed_times) // 2]
-    print(f"Median elapsed time: {median_latency} seconds")
 
     if timedelta < 1:
         timedelta = 1
 
     throughput = len(elapsed_times) / timedelta
-    print(f"Throughput: {throughput} transactions per second")
 
     metrics.loc[0] = [
         pd.Timestamp.now(),
