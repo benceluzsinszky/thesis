@@ -67,6 +67,9 @@ def calculate_metrics(response_datas: list, test_type: str) -> pd.DataFrame:
         ]
     )
 
+    if not response_datas:
+        return metrics
+
     elapsed_times = [data[0] for data in response_datas]
     timedelta = (response_datas[-1][1] - response_datas[0][1]).total_seconds()
 
@@ -256,47 +259,44 @@ if __name__ == "__main__":
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
 
-    WORKFLOW_THREADS = [1, 5, 10]
+    # WORKFLOW_THREADS = [1, 5, 10, 15, 20, 25]
 
-    # WORKFLOW_THREADS = [
-    #     1,
-    #     2,
-    #     3,
-    #     4,
-    #     5,
-    #     6,
-    #     7,
-    #     8,
-    #     9,
-    #     10,
-    #     11,
-    #     12,
-    #     13,
-    #     14,
-    #     15,
-    #     16,
-    #     17,
-    #     18,
-    #     19,
-    #     20,
-    #     21,
-    #     22,
-    #     23,
-    #     24,
-    #     25,
-    #     30,
-    #     35,
-    #     40,
-    #     45,
-    #     50,
-    #     60,
-    #     70,
-    #     80,
-    #     90,
-    #     100,
-    #     125,
-    #     150,
-    # ]
+    WORKFLOW_THREADS = [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        30,
+        35,
+        40,
+        45,
+        50,
+        60,
+        70,
+        90,
+        100,
+    ]
 
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
