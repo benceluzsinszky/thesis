@@ -29,10 +29,11 @@ The program uses arguments to run. The arguments are as follows:
 - `--config_path` or `-c`: The path to the config file. Default is "config.json".
 - `--csv_file` or `-f`: Save the results to a .csv file. Default is False.
 
-Example usage:
+Example usage (run workflow with 5 loops and random endpoints):
 
 ```bash
-python ZeeguuApi.py -u 0 -t 1
+cd src
+python StressTest.py -w -r -l 5
 ```
 
 Increase the number of threads and observer the change in the outoput .csv files or in the print statements.
