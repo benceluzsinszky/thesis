@@ -15,14 +15,12 @@
                     "article_source": 2
                 }
             }
-
         },
         {
             "path": "/session/bluz@itu.dk",
             "method": "POST",
             "content_type": "x-www-form-urlencoded",
-            "parameters":
-            {
+            "parameters": {
                 "password": "password"
             }
         },
@@ -30,22 +28,39 @@
             "path": "/available_languages",
             "method": "GET",
             "content_type": "json",
-            "parameters":
-            {
-            }
+            "parameters": {}
         },
         {
             "path": "/user_articles/recommended",
             "method": "GET",
             "content_type": "json",
-            "parameters":
-            {
+            "parameters": {}
+        },
+        {
+            "path": "/user_article",
+            "method": "GET",
+            "content_type": "json",
+            "parameters": {
+                "article_id": 2130619
             }
         }
     ],
-    "user_profiles":[
-    [0, 1, 2, 3],
-    [3, 2, 1, 0]
+    "user_profiles": [
+        [
+            4,
+            5
+        ],
+        [
+            0,
+            1,
+            2,
+            3
+        ],
+        [
+            3,
+            2,
+            1,
+            0
+        ]
     ]
 }
-   
