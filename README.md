@@ -37,8 +37,55 @@ Increase the number of threads and observer the change in the outoput .csv files
 
 ## User profiles
 
-TODO:
-Add description to user profiles here.
+In the config file a user profile is an array of arrays with two integers. The first integer is the index of the endpoint from the config file and the second integer is the delay to wait after the enpoint is called. The last delay should always be zero.
+
+The indexing of the user profiles starts from 0.
+
+- Profile 0: The Exerciser
+
+  - login
+  - sees articles on the homepage but decides that he wants to exercise (1s)
+  - selects exercises tab
+  - repeats 10 times the following
+    - starts looking at the first exercise (~2s)
+    - asks for hint; looks at hint for (~1s)
+    - asks for solution; looks at it for 1s
+    - clicks next
+
+- Profile 1: The Loiterer
+
+  - login
+  - goes to /words
+  - scrolls three times to get new articles
+  - goes to /saved articles
+  - opens a saved article
+  - goes to /history
+  - goes /user_dashboard
+  - opens /settings
+  - goes to /searches and searches something
+
+(spends 1s between every action)
+
+- Profile 2: The Reader
+
+  - login
+  - /scrolls three times past the end of the page
+  - opens one article
+  - translates 7 words
+  - reviews words
+
+(1 - 3s between actions)
+
+- Profile 3: The Reader-Exerciser
+
+  - login
+  - goes to the My Searches Page
+  - picks an Article that is Available
+  - makes Translations of 5 words
+  - opens the /words tab
+  - goes to exercises and completes an exercise session (some correct some show solution)
+
+(1 - 3s between actions)
 
 ## Remark
 

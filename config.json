@@ -4,6 +4,7 @@
     "password": "password",
     "endpoints": [
         {
+            "id": 0,
             "path": "/upload_user_activity_data",
             "method": "POST",
             "content_type": "json",
@@ -17,6 +18,7 @@
             }
         },
         {
+            "id": 1,
             "path": "/session/bluz@itu.dk",
             "method": "POST",
             "content_type": "x-www-form-urlencoded",
@@ -25,18 +27,21 @@
             }
         },
         {
+            "id": 2,
             "path": "/available_languages",
             "method": "GET",
             "content_type": "json",
             "parameters": {}
         },
         {
+            "id": 3,
             "path": "/user_articles/recommended",
             "method": "GET",
             "content_type": "json",
             "parameters": {}
         },
         {
+            "id": 4,
             "path": "/user_article",
             "method": "GET",
             "content_type": "json",
@@ -64,21 +69,17 @@
     ],
     "user_profiles": [
         [
-            3,
             4,
             5
         ],
         [
-            0,
-            1,
-            2,
-            3
+            [0, 0]
         ],
         [
-            3,
-            2,
-            1,
-            0
+            [0, 0]
+        ],
+        [
+           [0, 0]
         ]
     ]
 }
