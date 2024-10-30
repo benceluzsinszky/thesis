@@ -43,10 +43,28 @@
             "parameters": {
                 "article_id": 2130619
             }
+        },
+        {
+            "path": "/user_article/dk/en",
+            "method": "GET",
+            "content_type": "json",
+            "parameters": {
+                "word": "kartoffel"
+            }
+        },
+        {
+            "path": "/get_total_bookmarks_in_pipeline",
+            "method": "GET",
+            "content_type": "json",
+            "parameters": {
+                "word": "kartoffel"
+            }
         }
+
     ],
     "user_profiles": [
         [
+            3,
             4,
             5
         ],
