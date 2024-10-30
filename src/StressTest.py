@@ -4,6 +4,7 @@ import threading
 import pandas as pd
 import csv
 import random
+import time
 import tqdm
 
 from Args import (
@@ -70,7 +71,10 @@ def calculate_metrics(response_datas: list, test_type: str) -> pd.DataFrame:
     if not response_datas:
         return metrics
 
-    elapsed_times = [data[0] for data in response_datas]
+    # Remove None values
+    response_datas = [data for data in response_datas if data]
+
+    elapsed_times = [data[0] for data in response_datas if data]
     timedelta = (response_datas[-1][1] - response_datas[0][1]).total_seconds()
 
     average_latency = sum(elapsed_times) / len(elapsed_times)
@@ -157,31 +161,33 @@ def handle_user_profile():
         barrier.wait()
 
         for idx in endpoints:
-            endpoint = CONFIG["endpoints"][idx]
+            endpoint = CONFIG["endpoints"][idx[0]]
+
             path = endpoint["path"]
             request_method = endpoint["method"]
             content_type = endpoint["content_type"]
             parameters = endpoint["parameters"]
 
-            elapsed_time = send_request(
+            response_data = send_request(
                 endpoint=path,
                 request_method=request_method,
                 content_type=content_type,
                 parameters=parameters,
             )
 
-            elapsed_times.append(elapsed_time)
+            response_datas.append(response_data)
 
-    timestamp = datetime.now(UTC)
-    elapsed_times = []
+            time.sleep(idx[1])
+
+    response_datas = []
     threads = []
-    number_of_threads = get_number_of_threads()
-    barrier = threading.Barrier(number_of_threads)
+
+    barrier = threading.Barrier(NUMBER_OF_THREADS)
 
     idx = use_user_profile()
     endpoints = CONFIG["user_profiles"][idx]
 
-    for _ in range(number_of_threads):
+    for _ in range(NUMBER_OF_THREADS):
         thread = threading.Thread(target=thread_request)
         threads.append(thread)
         thread.start()
@@ -189,29 +195,11 @@ def handle_user_profile():
     for thread in threads:
         thread.join()
 
-    metrics = calculate_metrics(elapsed_times)
+    metrics = calculate_metrics(
+        response_datas=response_datas, test_type=f"user_profile_{idx}"
+    )
 
-    with open("results_users.csv", "a", newline="") as csvfile:
-        fieldnames = [
-            "timestamp_UTC",
-            "user_profile",
-            "load",
-            "average_time",
-            "median_time",
-            "throughput",
-        ]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writerow(
-            {
-                "timestamp_UTC": timestamp,
-                "user_profile": idx,
-                "load": number_of_threads,
-                "average_time": metrics["average_time"],
-                "median_time": metrics["median_time"],
-                "throughput": metrics["throughput"],
-            }
-        )
+    return metrics
 
 
 def handle_random_endpoints():
@@ -259,7 +247,7 @@ if __name__ == "__main__":
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
 
-    WORKFLOW_THREADS = [1, 5, 10, 15, 20, 25]
+    WORKFLOW_THREADS = [1, 5, 10]
 
     # WORKFLOW_THREADS = [
     #     1,
@@ -310,20 +298,20 @@ if __name__ == "__main__":
 
     total_iterations = len(WORKFLOW_THREADS) * get_number_of_loops()
 
-    with tqdm.tqdm(total=total_iterations, desc="Progress:") as pbar:
+    with tqdm.tqdm(total=total_iterations, desc="Progress") as pbar:
         for threads in WORKFLOW_THREADS:
             NUMBER_OF_THREADS = threads
             for _ in range(get_number_of_loops()):
                 if use_endpoint() is not None:
-                    handle_single_endpoint()
+                    data = handle_single_endpoint()
                 elif use_user_profile() is not None:
-                    handle_user_profile()
+                    data = handle_user_profile()
                 elif use_random():
                     data = handle_random_endpoints()
-                    df = pd.concat([df, data], ignore_index=True)
                 else:
                     print("Add argument -u or -e or -r")
                     break
+                df = pd.concat([df, data], ignore_index=True)
                 pbar.update(1)
 
     if use_csv_file():
