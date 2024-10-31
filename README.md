@@ -37,8 +37,14 @@ Increase the number of threads and observer the change in the outoput .csv files
 
 ## User profiles
 
-In the config file a user profile is an array of arrays with two integers. The first integer is the index of the endpoint from the config file and the second integer is the delay to wait after the enpoint is called. The last delay should always be zero.
+In the config file a user profile is an array of maps, with an id, a name and endpoints.
+Endpoints is again an array of maps with:
 
+- id: the index of the endpoint in the config file
+- repeat: the number of times the endpoint should be called
+- delay: the delay after the endpoint is called
+
+The last delay should always be zero.
 The indexing of the user profiles starts from 0.
 
 - Profile 0: The Exerciser
