@@ -50,6 +50,7 @@
             }
         },
         {
+            "id": 5,
             "path": "/user_article/dk/en",
             "method": "GET",
             "content_type": "json",
@@ -58,13 +59,34 @@
             }
         },
         {
+            "id": 6,
             "path": "/get_total_bookmarks_in_pipeline",
             "method": "GET",
             "content_type": "json",
             "parameters": {
                 "word": "kartoffel"
             }
+        },
+        {
+            "id": 7,
+            "path": "/top_bookmarks_to_study",
+            "method": "GET",
+            "content_type": "json",
+            "parameters": {
+            }
+        },
+        {
+            "id": 8,
+            "path": "/get_one_translation",
+            "method": "POST",
+            "content_type": "x-www-form-urlencoded",
+            "body": {
+                "context": "L'atmosphère commerciale des fêtes de fin d'année incite les influenceurs à massifier et renouveler leurs contenus.",
+                "word":"d'année"
+            }
         }
+
+
 
     ],
     "user_profiles": [
@@ -79,7 +101,20 @@
             [0, 0]
         ],
         [
-           [0, 0]
+           [0, 0],
+           [3, 0],
+           [3, 0],
+           [3, 0],
+           [4, 0],
+           [8, 1],
+           [8, 1],
+           [8, 1],
+           [8, 1],
+           [8, 1],
+           [8, 1],
+           [8, 1],
+           [7, 5]
+
         ]
     ]
 }
