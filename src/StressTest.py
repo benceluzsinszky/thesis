@@ -160,6 +160,8 @@ def handle_user_profile():
     def thread_request():
         barrier.wait()
 
+        start_time = datetime.now(UTC)
+
         for i in endpoints:
             endpoint = CONFIG["endpoints"][i["id"]]
             path = endpoint["path"]
@@ -168,15 +170,19 @@ def handle_user_profile():
             parameters = endpoint["parameters"]
 
             for _ in range(i["repeat"]):
-                response_data = send_request(
+                send_request(
                     endpoint=path,
                     request_method=request_method,
                     content_type=content_type,
                     parameters=parameters,
                 )
+                # if response_data is not None:
+                # response_datas.append(response_data)
+                time.sleep(i["delay"] / 10)
 
-                response_datas.append(response_data)
-                time.sleep(i["delay"])
+        end_time = datetime.now(UTC)
+        user_time = (end_time - start_time).total_seconds()
+        response_datas.append([user_time, end_time])
 
     response_datas = []
     threads = []
@@ -195,11 +201,16 @@ def handle_user_profile():
     for thread in threads:
         thread.join()
 
-    metrics = calculate_metrics(
-        response_datas=response_datas, test_type=f"user_profile_{idx}"
-    )
+    raw_data = pd.DataFrame(response_datas, columns=["user_time", "timestamp"])
+    raw_data["test_type"] = f"user_profile_{idx}"
+    raw_data["load"] = NUMBER_OF_THREADS
 
-    return metrics
+    return raw_data
+    # metrics = calculate_metrics(
+    #     response_datas=response_datas, test_type=f"user_profile_{idx}"
+    # )
+
+    # return metrics
 
 
 def handle_random_endpoints():

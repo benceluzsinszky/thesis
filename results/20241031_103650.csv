@@ -1,0 +1,2 @@
+timestamp,test_type,load,average_latency,median_latency,throughput
+2024-10-31 10:36:23.673620,user_profile_0,1,0.5427225555555555,0.436883,0.13110049572593446

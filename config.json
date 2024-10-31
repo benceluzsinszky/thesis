@@ -1,184 +1,185 @@
 {
-    "base_url": "https://api.maxitwit.tech",
-    "email": "bluz@itu.dk",
-    "password": "password",
-    "endpoints": [
-        {
-            "id": 0,
-            "path": "/upload_user_activity_data",
-            "method": "POST",
-            "content_type": "json",
-            "parameters": {
-                "time": "2016-05-05T10:11:12",
-                "event": "User Read Article",
-                "value": "300s",
-                "extra_data": {
-                    "article_source": 2
-                }
-            }
-        },
-        {
-            "id": 1,
-            "path": "/session/bluz@itu.dk",
-            "method": "POST",
-            "content_type": "x-www-form-urlencoded",
-            "parameters": {
-                "password": "password"
-            }
-        },
-        {
-            "id": 2,
-            "path": "/available_languages",
-            "method": "GET",
-            "content_type": "json",
-            "parameters": {}
-        },
-        {
-            "id": 3,
-            "path": "/user_articles/recommended",
-            "method": "GET",
-            "content_type": "json",
-            "parameters": {}
-        },
-        {
-            "id": 4,
-            "path": "/user_article",
-            "method": "GET",
-            "content_type": "json",
-            "parameters": {
-                "article_id": 2130619
-            }
-        },
-        {
-            "id": 5,
-            "path": "/user_article/dk/en",
-            "method": "GET",
-            "content_type": "json",
-            "parameters": {
-                "word": "kartoffel"
-            }
-        },
-        {
-            "id": 6,
-            "path": "/get_total_bookmarks_in_pipeline",
-            "method": "GET",
-            "content_type": "json",
-            "parameters": {
-                "word": "kartoffel"
-            }
-        },
-        {
-            "id": 7,
-            "path": "/top_bookmarks_to_study",
-            "method": "GET",
-            "content_type": "json",
-            "parameters": {}
-        },
-        {
-            "id": 8,
-            "path": "/get_one_translation",
-            "method": "POST",
-            "content_type": "x-www-form-urlencoded",
-            "body": {
-                "context": "L'atmosphère commerciale des fêtes de fin d'année incite les influenceurs à massifier et renouveler leurs contenus.",
-                "word": "d'année"
-            }
+  "base_url": "https://api.maxitwit.tech",
+  "email": "bluz@itu.dk",
+  "password": "password",
+  "endpoints": [
+    {
+      "id": 0,
+      "path": "/upload_user_activity_data",
+      "method": "POST",
+      "content_type": "json",
+      "parameters": {
+        "time": "2016-05-05T10:11:12",
+        "event": "User Read Article",
+        "value": "300s",
+        "extra_data": {
+          "article_source": 2
         }
-    ],
-    "user_profiles": [
+      }
+    },
+    {
+      "id": 1,
+      "path": "/session/bluz@itu.dk",
+      "method": "POST",
+      "content_type": "x-www-form-urlencoded",
+      "parameters": {
+        "password": "password"
+      }
+    },
+    {
+      "id": 2,
+      "path": "/available_languages",
+      "method": "GET",
+      "content_type": "json",
+      "parameters": {}
+    },
+    {
+      "id": 3,
+      "path": "/user_articles/recommended",
+      "method": "GET",
+      "content_type": "json",
+      "parameters": {}
+    },
+    {
+      "id": 4,
+      "path": "/user_article",
+      "method": "GET",
+      "content_type": "json",
+      "parameters": {
+        "article_id": 2130619
+      }
+    },
+    {
+      "id": 5,
+      "path": "/user_article/dk/en",
+      "method": "GET",
+      "content_type": "json",
+      "parameters": {
+        "word": "kartoffel"
+      }
+    },
+    {
+      "id": 6,
+      "path": "/get_total_bookmarks_in_pipeline",
+      "method": "GET",
+      "content_type": "json",
+      "parameters": {
+        "word": "kartoffel"
+      }
+    },
+    {
+      "id": 7,
+      "path": "/top_bookmarks_to_study",
+      "method": "GET",
+      "content_type": "json",
+      "parameters": {}
+    },
+    {
+      "id": 8,
+      "path": "/get_one_translation",
+      "method": "POST",
+      "content_type": "x-www-form-urlencoded",
+      "body": {
+        "context": "L'atmosphère commerciale des fêtes de fin d'année incite les influenceurs à massifier et renouveler leurs contenus.",
+        "word": "d'année"
+      },
+      "parameters": {}
+    }
+  ],
+  "user_profiles": [
+    {
+      "id": 0,
+      "name": "The Exerciser",
+      "endpoints": [
         {
-            "id": 0,
-            "name": "The Exerciser",
-            "endpoints": [
-                {
-                    "id": 1,
-                    "repeat": 1,
-                    "delay": 1
-                },
-                {
-                    "id": 2,
-                    "repeat": 7,
-                    "delay": 2
-                },
-                {
-                    "id": 3,
-                    "repeat": 1,
-                    "delay": 0
-                }
-            ]
+          "id": 1,
+          "repeat": 1,
+          "delay": 1
         },
         {
-            "id": 1,
-            "name": "The Loiterer",
-            "endpoints": [
-                {
-                    "id": 1,
-                    "repeat": 1,
-                    "delay": 1
-                },
-                {
-                    "id": 2,
-                    "repeat": 7,
-                    "delay": 2
-                },
-                {
-                    "id": 3,
-                    "repeat": 1,
-                    "delay": 0
-                }
-            ]
+          "id": 2,
+          "repeat": 7,
+          "delay": 2
         },
         {
-            "id": 2,
-            "name": "The Reader",
-            "endpoints": [
-                {
-                    "id": 1,
-                    "repeat": 1,
-                    "delay": 1
-                },
-                {
-                    "id": 3,
-                    "repeat": 3,
-                    "delay": 1
-                },
-                {
-                    "id": 4,
-                    "repeat": 1,
-                    "delay": 0
-                },
-                {
-                    "id": 8,
-                    "repeat": 7,
-                    "delay": 0
-                },
-                {
-                    "id": 7,
-                    "repeat": 1,
-                    "delay": 0
-                }
-            ]
-        },
-        {
-            "id": 3,
-            "name": "The Reader-Exerciser",
-            "endpoints": [
-                {
-                    "id": 1,
-                    "repeat": 1,
-                    "delay": 1
-                },
-                {
-                    "id": 2,
-                    "repeat": 7,
-                    "delay": 2
-                },
-                {
-                    "id": 3,
-                    "repeat": 1,
-                    "delay": 0
-                }
-            ]
+          "id": 3,
+          "repeat": 1,
+          "delay": 0
         }
-    ]
+      ]
+    },
+    {
+      "id": 1,
+      "name": "The Loiterer",
+      "endpoints": [
+        {
+          "id": 1,
+          "repeat": 1,
+          "delay": 1
+        },
+        {
+          "id": 2,
+          "repeat": 7,
+          "delay": 2
+        },
+        {
+          "id": 3,
+          "repeat": 1,
+          "delay": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "The Reader",
+      "endpoints": [
+        {
+          "id": 1,
+          "repeat": 1,
+          "delay": 1
+        },
+        {
+          "id": 3,
+          "repeat": 3,
+          "delay": 1
+        },
+        {
+          "id": 4,
+          "repeat": 1,
+          "delay": 0
+        },
+        {
+          "id": 8,
+          "repeat": 7,
+          "delay": 0
+        },
+        {
+          "id": 7,
+          "repeat": 1,
+          "delay": 0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "The Reader-Exerciser",
+      "endpoints": [
+        {
+          "id": 1,
+          "repeat": 1,
+          "delay": 1
+        },
+        {
+          "id": 2,
+          "repeat": 7,
+          "delay": 2
+        },
+        {
+          "id": 3,
+          "repeat": 1,
+          "delay": 0
+        }
+      ]
+    }
+  ]
 }
