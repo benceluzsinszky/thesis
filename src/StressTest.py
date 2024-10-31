@@ -160,24 +160,23 @@ def handle_user_profile():
     def thread_request():
         barrier.wait()
 
-        for idx in endpoints:
-            endpoint = CONFIG["endpoints"][idx[0]]
-
+        for i in endpoints:
+            endpoint = CONFIG["endpoints"][i["id"]]
             path = endpoint["path"]
             request_method = endpoint["method"]
             content_type = endpoint["content_type"]
             parameters = endpoint["parameters"]
 
-            response_data = send_request(
-                endpoint=path,
-                request_method=request_method,
-                content_type=content_type,
-                parameters=parameters,
-            )
+            for _ in range(i["repeat"]):
+                response_data = send_request(
+                    endpoint=path,
+                    request_method=request_method,
+                    content_type=content_type,
+                    parameters=parameters,
+                )
 
-            response_datas.append(response_data)
-
-            time.sleep(idx[1])
+                response_datas.append(response_data)
+                time.sleep(i["delay"])
 
     response_datas = []
     threads = []
@@ -185,7 +184,8 @@ def handle_user_profile():
     barrier = threading.Barrier(NUMBER_OF_THREADS)
 
     idx = use_user_profile()
-    endpoints = CONFIG["user_profiles"][idx]
+    profile = CONFIG["user_profiles"][idx]
+    endpoints = profile["endpoints"]
 
     for _ in range(NUMBER_OF_THREADS):
         thread = threading.Thread(target=thread_request)
