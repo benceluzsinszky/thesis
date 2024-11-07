@@ -1,0 +1,24 @@
+\section{Evaluation}
+
+To have an understaing of the data, it needs to be visualized. For this purpose matplotlib is used.
+The data from the experiments is loaded from the csv files and matplotlib creates the diagrams and histograms.
+
+
+\subsection{Assessment of scalability}
+
+In a normal working scenario, for the same endpoint the latency should be consistent. CITE SOMETHING
+
+Throughput should grow linearly with the number of clients until a point where one of the bottleneck resources is saturated. 
+After that point, the throughput should remain constant. CITE SOMETHING
+
+HISTOGRAM OF NORMAL LATENCY
+
+DIAGRAM OF NORMAL THROUGHPUT
+
+\subsection{Findings}
+
+HISTOGRAM OF ZEEGUU LATENCY
+
+DIAGRAM OF ZEEGUU THROUGHPUT
+
+what are the differences, how does this look, is it realistic, what fee
