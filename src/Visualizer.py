@@ -33,7 +33,34 @@ def throughput(file_path: str):
     plt.show()
 
 
-def latency_histogram(file_path: str):
+def latency_histograms_per_load(file_path: str):
+    load_points = [1, 5, 10, 20, 50, 100, 200]
+
+    df = pd.read_csv(file_path)
+
+    sns.set_theme(style="whitegrid")
+
+    for load in load_points:
+        df_load = df[df["load"] == load]
+
+        plt.figure(figsize=(12, 8))
+        sns.histplot(
+            data=df_load,
+            x="latency",
+            hue="load",
+            multiple="stack",
+            palette="tab20",
+            bins=150,
+        )
+
+        plt.xlabel("Latency")
+        plt.ylabel("Count")
+        plt.title(f"GET /session Latency Histogram  - {load} Concurrent Users")
+
+        plt.show()
+
+
+def latency_histogream_sum(file_path: str):
     df = pd.read_csv(file_path)
 
     sns.set_theme(style="whitegrid")
@@ -42,19 +69,21 @@ def latency_histogram(file_path: str):
     sns.histplot(
         data=df,
         x="latency",
-        hue="endpoint",
-        multiple="stack",
+        hue="load",
+        multiple="layer",
         palette="tab20",
-        bins=100,
+        bins=150,
     )
 
     plt.xlabel("Latency")
     plt.ylabel("Count")
-    plt.title("Latency Distribution by Endpoint")
+    plt.title("GET /session Summerized Latency Histogram")
 
     plt.show()
 
 
 if __name__ == "__main__":
-    # throughput("./results/20241104_120135.csv")
-    latency_histogram("./results/20241102_160123.csv")
+    file = "./results/get_session_sum_lucian.csv"
+    throughput(file)
+    # latency_histograms_per_load(file)
+    # latency_histogream_sum(file)
