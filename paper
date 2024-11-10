@@ -1,24 +1,43 @@
-\section{Evaluation}
+\subsubsection{/session}
 
-To have an understaing of the data, it needs to be visualized. For this purpose matplotlib is used.
-The data from the experiments is loaded from the csv files and matplotlib creates the diagrams and histograms.
+The endpoint is used to log the user in. To be able to access the other endpoints a user session must be initialized, so before each other tests this endpoint is being called.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{get_session_sum_histogram.png}
+    \caption{\texttt{GET /session} Summarized Histogram}
+    \label{fig:session-sum}
+\end{figure}
 
-\subsection{Assessment of scalability}
-
-In a normal working scenario, for the same endpoint the latency should be consistent. CITE SOMETHING
-
-Throughput should grow linearly with the number of clients until a point where one of the bottleneck resources is saturated. 
-After that point, the throughput should remain constant. CITE SOMETHING
-
-HISTOGRAM OF NORMAL LATENCY
-
-DIAGRAM OF NORMAL THROUGHPUT
-
-\subsection{Findings}
-
-HISTOGRAM OF ZEEGUU LATENCY
-
-DIAGRAM OF ZEEGUU THROUGHPUT
-
-what are the differences, how does this look, is it realistic, what fee
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{get_session_1_user.png}
+        \caption{\texttt{GET /session} 1 User}
+        \label{fig:session-1-user}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{get_session_10_user.png}
+        \caption{\texttt{GET /session} 10 Users}
+        \label{fig:session-10-user}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{get_session_25_user.png}
+        \caption{\texttt{GET /session} 25 Users}
+        \label{fig:session-25-user}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{get_session_30_user.png}
+        \caption{\texttt{GET /session} 30 Users}
+        \label{fig:session-30-user}
+    \end{subfigure}
+    \caption{Summarized Histograms for \texttt{GET /session}}
+    \label{fig:session-sum-all}
+\end{figure}
