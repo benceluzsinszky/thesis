@@ -94,7 +94,7 @@ def latency_histogram_sum(file_path: str):
 
 
 if __name__ == "__main__":
-    file = "./results/get_session_sum_robert.csv"
+    file = "./results/202"
     throughput(file)
     # latency_histograms_per_load(file)
     # latency_histogram_sum(file)
