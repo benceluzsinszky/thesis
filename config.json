@@ -23,7 +23,7 @@
       "method": "POST",
       "content_type": "x-www-form-urlencoded",
       "parameters": {
-        "password": "password"
+        "password": "tester"
       }
     },
     {
