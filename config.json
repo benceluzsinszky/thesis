@@ -1,7 +1,7 @@
 {
-  "base_url": "https://api.maxitwit.tech",
-  "email": "bluz@itu.dk",
-  "password": "password",
+  "base_url": "https://zeeguu.org/",
+  "email": "test@itu.dk",
+  "password": "tester",
   "endpoints": [
     {
       "id": 0,
@@ -19,7 +19,7 @@
     },
     {
       "id": 1,
-      "path": "/session/bluz@itu.dk",
+      "path": "/session/test@itu.dk",
       "method": "POST",
       "content_type": "x-www-form-urlencoded",
       "parameters": {
