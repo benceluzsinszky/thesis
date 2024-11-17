@@ -1,7 +1,7 @@
 {
-  "base_url": "https://zeeguu.org/",
-  "email": "test@itu.dk",
-  "password": "tester",
+  "base_url": "https://www.api.maxitwit.tech",
+  "email": "rslu@itu.dk",
+  "password": "040698",
   "endpoints": [
     {
       "id": 0,

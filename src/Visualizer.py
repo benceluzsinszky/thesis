@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-LATENCY_THRESHOLD = 2
+LATENCY_THRESHOLD = 2.0
 
 
 def throughput(file_path: str):
@@ -94,7 +94,7 @@ def latency_histogram_sum(file_path: str):
 
 
 if __name__ == "__main__":
-    file = "./results/202"
-    throughput(file)
-    # latency_histograms_per_load(file)
-    # latency_histogram_sum(file)
+    file = "./results/available_languages/available_languages_30.csv"
+    #throughput(file)
+    #latency_histograms_per_load(file)
+    latency_histogram_sum(file)
