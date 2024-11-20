@@ -120,9 +120,9 @@ def latency_curve(df: pd.DataFrame, load: int = 1):
 
 
 if __name__ == "__main__":
-    file = "./results/get_user_articles_lucian_10sec.csv"
+    file = "./results/users_articles_recommended/users_articles_recommended_100.csv"
     df = pd.read_csv(file)
     # throughput(df)
     # latency_histograms_per_load(df, [2])
-    # latency_histogram_sum(df)
-    latency_curve(df, 2)
+    latency_histogram_sum(df)
+    # latency_curve(df, 2)
