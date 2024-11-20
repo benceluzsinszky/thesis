@@ -5,9 +5,7 @@ import seaborn as sns
 LATENCY_THRESHOLD = 2
 
 
-def throughput(file_path: str):
-    df = pd.read_csv(file_path)
-
+def throughput(df: pd.DataFrame):
     df["timestamp"] = pd.to_datetime(df["timestamp"])
 
     grouped = df.groupby("load")
@@ -29,15 +27,16 @@ def throughput(file_path: str):
     throughput_df = throughput_df.sort_values(by="load")
 
     plt.plot(throughput_df["load"], throughput_df["throughput"])
-    plt.ylabel("Throughput [TPS]")
-    plt.xlabel("Concurrent Users")
+    plt.ylabel("Throughput [TPS]", fontsize=18)
+    plt.xlabel("Concurrent Users", fontsize=18)
+    plt.tick_params(axis="both", which="major", labelsize=16)
+
     plt.show()
 
 
-def latency_histograms_per_load(file_path: str):
-    load_points = [30]
-
-    df = pd.read_csv(file_path)
+def latency_histograms_per_load(df: pd.DataFrame, load_points: list | None = None):
+    if load_points is None:
+        load_points = [1, 5, 10, 20, 50, 100, 200]
 
     sns.set_theme(style="whitegrid")
 
@@ -55,18 +54,19 @@ def latency_histograms_per_load(file_path: str):
             legend=False,
         )
 
-        plt.xlabel("Latency [s]", fontsize=16)
-        plt.ylabel("Count", fontsize=16)
+        plt.xlabel("Latency [s]", fontsize=18)
+        plt.ylabel("Count", fontsize=18)
         plt.xlim(right=3, left=0)
-        plt.axvline(x=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold")
+        plt.axvline(
+            x=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold Latency"
+        )
+        plt.tick_params(axis="both", which="major", labelsize=16)
 
         plt.show()
 
 
-def latency_histogram_sum(file_path: str):
-    df = pd.read_csv(file_path)
-
-    load_values = [1, 5, 25, 30, 50, 100, 200]
+def latency_histogram_sum(df: pd.DataFrame):
+    load_values = [1, 2, 5, 25, 30, 50, 100, 200]
     df = df[df["load"].isin(load_values)]
 
     sns.set_theme(style="whitegrid")
@@ -81,20 +81,48 @@ def latency_histogram_sum(file_path: str):
         bins=100,
     )
 
-    plt.xlabel("Latency [s]", fontsize=16)
-    plt.ylabel("Count", fontsize=16)
-    plt.axvline(x=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold")
+    plt.xlabel("Latency [s]", fontsize=18)
+    plt.ylabel("Count", fontsize=18)
+    plt.axvline(
+        x=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold Latency"
+    )
 
     hist_plot.legend_.set_title("Concurrent Users")
     hist_plot.legend_.get_title().set_fontsize(16)
     for text in hist_plot.legend_.get_texts():
         text.set_fontsize(14)
+    plt.tick_params(axis="both", which="major", labelsize=16)
+
+    plt.show()
+
+
+def latency_curve(df: pd.DataFrame, load: int = 1):
+    # Filter the data if necessary
+    df = df[df["load"] == load]  # Uncomment and modify if you need to filter by load
+
+    sns.set_theme(style="whitegrid")
+
+    plt.figure(figsize=(12, 8))
+
+    # Plot latency vs. number of requests (index)
+    plt.plot(df.index, df["latency"], label="Latency")
+
+    plt.axhline(
+        y=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold Latency"
+    )
+
+    plt.xlabel("Number of Requests", fontsize=18)
+    plt.ylabel("Latency [s]", fontsize=18)
+    plt.legend(fontsize=16)
+    plt.tick_params(axis="both", which="major", labelsize=16)
 
     plt.show()
 
 
 if __name__ == "__main__":
-    file = "./results/get_session_sum_robert.csv"
-    throughput(file)
-    # latency_histograms_per_load(file)
-    # latency_histogram_sum(file)
+    file = "./results/get_user_articles_lucian_10sec.csv"
+    df = pd.read_csv(file)
+    # throughput(df)
+    # latency_histograms_per_load(df, [2])
+    # latency_histogram_sum(df)
+    latency_curve(df, 2)
