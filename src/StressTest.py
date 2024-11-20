@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 import threading
 import pandas as pd
 import random
@@ -46,14 +46,14 @@ def send_request(
         response = request_method(url, data=parameters, headers=headers)  #
         if response.status_code != 200:
             print(f"Error at {endpoint}: {response.status_code}")
-            return [datetime.now(UTC), "N/A", endpoint]
+            return [datetime.now(timezone.utc), "N/A", endpoint]
         response_time = response.elapsed.total_seconds()
-        data = [datetime.now(UTC), response_time, endpoint]
+        data = [datetime.now(timezone.utc), response_time, endpoint]
         return data
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return [datetime.now(UTC), "N/A", endpoint]
+        return [datetime.now(timezone.utc), "N/A", endpoint]
 
 
 def handle_single_endpoint():
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
 
-    WORKFLOW_THREADS = [1, 5, 10, 20, 25]
+    WORKFLOW_THREADS = [1, 10, 25, 50]
 
     # WORKFLOW_THREADS = [
     #     1,
@@ -226,7 +226,8 @@ if __name__ == "__main__":
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
     password = CONFIG["password"]
-    SESSION = get_user_session(email, password)
+    #SESSION = get_user_session(email, password)
+    SESSION = "f9bea57b99ab45d783e3207bf4e41a29"
 
     df = pd.DataFrame()
 

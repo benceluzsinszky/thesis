@@ -1,7 +1,7 @@
 {
-  "base_url": "https://api.maxitwit.tech",
-  "email": "bluz@itu.dk",
-  "password": "password",
+  "base_url": "https://www.api.maxitwit.tech",
+  "email": "rslu@itu.dk",
+  "password": "040698",
   "endpoints": [
     {
       "id": 0,
@@ -19,11 +19,11 @@
     },
     {
       "id": 1,
-      "path": "/session/bluz@itu.dk",
+      "path": "/session/test@itu.dk",
       "method": "POST",
       "content_type": "x-www-form-urlencoded",
       "parameters": {
-        "password": "password"
+        "password": "tester"
       }
     },
     {

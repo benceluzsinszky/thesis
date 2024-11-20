@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-LATENCY_THRESHOLD = 2
+LATENCY_THRESHOLD = 2.0
 
 
 def throughput(df: pd.DataFrame):
