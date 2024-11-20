@@ -1,0 +1,11 @@
+timestamp,latency,endpoint,test_type,load
+2024-11-13 09:57:17.976050+00:00,0.979039,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:20.936623+00:00,0.947101,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:23.910507+00:00,0.959793,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:26.978398+00:00,1.064164,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:30.057318+00:00,1.063869,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:33.019649+00:00,0.961684,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:36.032524+00:00,1.008627,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:39.071323+00:00,1.019302,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:42.133410+00:00,1.058745,/user_articles/recommended,user_profile_3,1
+2024-11-13 09:57:45.209392+00:00,1.064368,/user_articles/recommended,user_profile_3,1
