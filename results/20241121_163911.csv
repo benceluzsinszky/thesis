@@ -1,0 +1,2 @@
+timestamp,latency,endpoint,test_type,load
+2024-11-21 15:39:11.278310+00:00,1.252252,/upload_user_activity_data,user_profile_0,1

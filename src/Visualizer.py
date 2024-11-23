@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-LATENCY_THRESHOLD = 2.0
+LATENCY_THRESHOLD = 0.3
 
 
 def throughput(df: pd.DataFrame):
@@ -36,7 +36,7 @@ def throughput(df: pd.DataFrame):
 
 def latency_histograms_per_load(df: pd.DataFrame, load_points: list | None = None):
     if load_points is None:
-        load_points = [1, 5, 10, 20, 50, 100, 200]
+        load_points = [1, 2, 4, 5, 10, 20, 50, 100, 200]
 
     sns.set_theme(style="whitegrid")
 
@@ -56,7 +56,7 @@ def latency_histograms_per_load(df: pd.DataFrame, load_points: list | None = Non
 
         plt.xlabel("Latency [s]", fontsize=18)
         plt.ylabel("Count", fontsize=18)
-        plt.xlim(right=3, left=0)
+        plt.xlim(right=0.5, left=0)
         plt.axvline(
             x=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold Latency"
         )
@@ -66,7 +66,7 @@ def latency_histograms_per_load(df: pd.DataFrame, load_points: list | None = Non
 
 
 def latency_histogram_sum(df: pd.DataFrame):
-    load_values = [1, 2, 5, 25, 30, 50, 100, 200]
+    load_values = [1, 2, 4, 5, 10, 20, 50, 100, 200]
     df = df[df["load"].isin(load_values)]
 
     sns.set_theme(style="whitegrid")
@@ -120,9 +120,9 @@ def latency_curve(df: pd.DataFrame, load: int = 1):
 
 
 if __name__ == "__main__":
-    file = "./results/mircea/20241120_230938.csv"
+    file = "./results/available_languages_sum.csv"
     df = pd.read_csv(file)
     # throughput(df)
-    # latency_histograms_per_load(df, [2])
-    latency_histogram_sum(df)
+    latency_histograms_per_load(df, [4])
+    # latency_histogram_sum(df)
     # latency_curve(df, 2)

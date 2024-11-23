@@ -1,0 +1,2 @@
+timestamp,latency,endpoint,test_type,load
+2024-11-21 15:30:46.538753+00:00,4.272434,/user_articles/recommended,user_profile_3,1
