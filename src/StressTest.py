@@ -226,8 +226,7 @@ if __name__ == "__main__":
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
     password = CONFIG["password"]
-    #SESSION = get_user_session(email, password)
-    SESSION = "12e69fc7407947fda9d84eced9f76c05"
+    SESSION = get_user_session(email, password)
 
     df = pd.DataFrame()
 
