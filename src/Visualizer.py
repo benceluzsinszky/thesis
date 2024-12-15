@@ -27,9 +27,9 @@ def throughput(df: pd.DataFrame):
     throughput_df = throughput_df.sort_values(by="load")
 
     plt.plot(throughput_df["load"], throughput_df["throughput"])
-    plt.ylabel("Throughput [TPS]", fontsize=18)
-    plt.xlabel("Concurrent Users", fontsize=18)
-    plt.tick_params(axis="both", which="major", labelsize=16)
+    plt.ylabel("Throughput [TPS]")
+    plt.xlabel("Concurrent Users")
+    plt.tick_params(axis="both", which="major")
 
     plt.show()
 
@@ -120,9 +120,9 @@ def latency_curve(df: pd.DataFrame, load: int = 1):
 
 
 if __name__ == "__main__":
-    file = "./results/available_languages_sum.csv"
+    file = "./results/upload_user_activity_sum.csv"
     df = pd.read_csv(file)
     # throughput(df)
-    latency_histograms_per_load(df, [4])
-    # latency_histogram_sum(df)
+    # latency_histograms_per_load(df, [4])
+    latency_histogram_sum(df)
     # latency_curve(df, 2)
