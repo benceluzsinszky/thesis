@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-LATENCY_THRESHOLD = 0.3
+LATENCY_THRESHOLD = 0.5
 
 
 def throughput(df: pd.DataFrame):
@@ -56,7 +56,7 @@ def latency_histograms_per_load(df: pd.DataFrame, load_points: list | None = Non
 
         plt.xlabel("Latency [s]", fontsize=18)
         plt.ylabel("Count", fontsize=18)
-        plt.xlim(right=0.5, left=0)
+        plt.xlim(right=1, left=0)
         plt.axvline(
             x=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold Latency"
         )
@@ -123,6 +123,6 @@ if __name__ == "__main__":
     file = "./results/upload_user_activity_sum.csv"
     df = pd.read_csv(file)
     # throughput(df)
-    # latency_histograms_per_load(df, [4])
+    # latency_histograms_per_load(df, [10])
     latency_histogram_sum(df)
-    # latency_curve(df, 2)
+    # latency_curve(df, 10)

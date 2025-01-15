@@ -195,34 +195,6 @@ if __name__ == "__main__":
 
     WORKFLOW_THREADS = [1, 10, 25, 50]
 
-    # WORKFLOW_THREADS = [
-    #     1,
-    #     2,
-    #     3,
-    #     4,
-    #     5,
-    #     6,
-    #     7,
-    #     8,
-    #     9,
-    #     10,
-    #     12,
-    #     14,
-    #     16,
-    #     18,
-    #     20,
-    #     25,
-    #     30,
-    #     35,
-    #     40,
-    #     45,
-    #     50,
-    #     60,
-    #     70,
-    #     90,
-    #     100,
-    # ]
-
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
     password = CONFIG["password"]
