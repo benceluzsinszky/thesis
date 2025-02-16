@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 import threading
 import pandas as pd
 import random
-import time
 import tqdm
 
 from Args import (
@@ -11,7 +10,6 @@ from Args import (
     get_number_of_loops,
     use_workflow,
     use_endpoint,
-    use_user_profile,
     use_random,
     get_config_path,
     use_csv_file,
@@ -98,53 +96,6 @@ def handle_single_endpoint():
     return raw_data
 
 
-def handle_user_profile():
-    def thread_request():
-        barrier.wait()
-
-        for i in endpoints:
-            endpoint = CONFIG["endpoints"][i["id"]]
-            path = endpoint["path"]
-            request_method = endpoint["method"]
-            content_type = endpoint["content_type"]
-            parameters = endpoint["parameters"]
-
-            for _ in range(i["repeat"]):
-                response_data = send_request(
-                    endpoint=path,
-                    request_method=request_method,
-                    content_type=content_type,
-                    parameters=parameters,
-                )
-                response_datas.append(response_data)
-                time.sleep(i["delay"] / 10)
-
-    response_datas = []
-    threads = []
-
-    barrier = threading.Barrier(NUMBER_OF_THREADS)
-
-    idx = use_user_profile()
-    profile = CONFIG["user_profiles"][idx]
-    endpoints = profile["endpoints"]
-
-    for _ in range(NUMBER_OF_THREADS):
-        thread = threading.Thread(target=thread_request)
-        threads.append(thread)
-        thread.start()
-
-    for thread in threads:
-        thread.join()
-
-    raw_data = pd.DataFrame(
-        response_datas, columns=["timestamp", "latency", "endpoint"]
-    )
-    raw_data["test_type"] = f"user_profile_{idx}"
-    raw_data["load"] = NUMBER_OF_THREADS
-
-    return raw_data
-
-
 def handle_random_endpoints():
     def thread_request():
         barrier.wait()
@@ -213,12 +164,10 @@ if __name__ == "__main__":
             for _ in range(get_number_of_loops()):
                 if use_endpoint() is not None:
                     data = handle_single_endpoint()
-                elif use_user_profile() is not None:
-                    data = handle_user_profile()
                 elif use_random():
                     data = handle_random_endpoints()
                 else:
-                    print("Add argument -u or -e or -r")
+                    print("Add argument or -e or -r")
                     break
                 df = pd.concat([df, data], ignore_index=True)
                 pbar.update(1)

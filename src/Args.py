@@ -28,12 +28,6 @@ parser.add_argument(
     help="Use single endpoint, use the index of the endpoint from the config file",
 )
 parser.add_argument(
-    "--user_profile",
-    "-u",
-    type=int,
-    help="Use user profile, use the index of the user profile from the config file",
-)
-parser.add_argument(
     "--config_path",
     "-c",
     type=str,
@@ -66,10 +60,6 @@ def use_workflow() -> bool:
 
 def use_endpoint() -> int:
     return args.endpoint
-
-
-def use_user_profile() -> int:
-    return args.user_profile
 
 
 def use_random() -> bool:
