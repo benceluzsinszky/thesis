@@ -3,21 +3,21 @@ import argparse
 parser = argparse.ArgumentParser(description="Process some integers.")
 
 parser.add_argument(
-    "--threads", "-t", type=int, help="The number of threads", default=1
+    "--threads", "-t", type=int, help="The number of threads. Default: 1", default=1
 )
 
 parser.add_argument(
     "--loops",
     "-l",
     type=int,
-    help="The number of times the simulator will run",
+    help="The number of times the simulator will run. Default: 1",
     default=1,
 )
 
 parser.add_argument(
     "--workflow",
     "-w",
-    help="Use workflow, run the simulator multiple times with increasing number of threads",
+    help="Use workflow, run the simulator multiple times with increasing number of threads.",
     action="store_true",
 )
 
@@ -25,21 +25,21 @@ parser.add_argument(
     "--endpoint",
     "-e",
     type=int,
-    help="Use single endpoint, use the index of the endpoint from the config file",
+    help="Use single endpoint, use the index of the endpoint from the config file.",
 )
 parser.add_argument(
     "--config_path",
     "-c",
     type=str,
-    help="The path to the config file",
+    help="The path to the config file.",
     default="config.json",
 )
-parser.add_argument("--random", "-r", action="store_true", help="Use random endpoints")
+parser.add_argument("--random", "-r", action="store_true", help="Use random endpoints.")
 
 parser.add_argument(
     "--no_save",
     "-ns",
-    help="Don't save the output .csv file",
+    help="Don't save the output .csv file.",
     action="store_true",
 )
 
