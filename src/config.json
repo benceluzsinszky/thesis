@@ -1,5 +1,5 @@
 {
-  "base_url": "https://api.maxitwit.tech/",
+  "base_url": "https://api.zeeguu.dev/",
   "email": "test@itu.dk",
   "password": "tester",
   "endpoints": [
@@ -93,102 +93,6 @@
       "method": "GET",
       "content_type": "json",
       "parameters": {}
-    }
-  ],
-  "user_profiles": [
-    {
-      "id": 0,
-      "name": "The Exerciser",
-      "endpoints": [
-        {
-          "id": 1,
-          "repeat": 1,
-          "delay": 1
-        },
-        {
-          "id": 2,
-          "repeat": 7,
-          "delay": 2
-        },
-        {
-          "id": 3,
-          "repeat": 1,
-          "delay": 0
-        }
-      ]
-    },
-    {
-      "id": 1,
-      "name": "The Loiterer",
-      "endpoints": [
-        {
-          "id": 1,
-          "repeat": 1,
-          "delay": 1
-        },
-        {
-          "id": 2,
-          "repeat": 7,
-          "delay": 2
-        },
-        {
-          "id": 3,
-          "repeat": 1,
-          "delay": 0
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "The Reader",
-      "endpoints": [
-        {
-          "id": 1,
-          "repeat": 1,
-          "delay": 1
-        },
-        {
-          "id": 3,
-          "repeat": 3,
-          "delay": 1
-        },
-        {
-          "id": 4,
-          "repeat": 1,
-          "delay": 0
-        },
-        {
-          "id": 7,
-          "repeat": 7,
-          "delay": 0
-        },
-        {
-          "id": 7,
-          "repeat": 1,
-          "delay": 0
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "The Reader-Exerciser",
-      "endpoints": [
-        {
-          "id": 1,
-          "repeat": 1,
-          "delay": 1
-        },
-        {
-          "id": 2,
-          "repeat": 7,
-          "delay": 2
-        },
-        {
-          "id": 3,
-          "repeat": 1,
-          "delay": 0
-        }
-      ]
     }
   ]
 }
