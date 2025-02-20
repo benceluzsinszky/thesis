@@ -5,11 +5,7 @@ import pandas as pd
 import random
 import logging
 
-from Args import (
-    use_workflow,
-    use_endpoint,
-    get_config_path,
-)
+from Args import use_endpoint, get_config_path, get_number_of_loops
 
 from FileIO import load_config_file, write_to_csv
 
@@ -54,7 +50,7 @@ def send_request(
         return data
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        LOGGER.error(f"An error occurred: {str(e)}")
         return [datetime.now(timezone.utc), "N/A", endpoint]
 
 
@@ -72,7 +68,7 @@ def handle_single_endpoint():
 
             response_datas.append(response_data)
         except Exception as e:
-            LOGGER.error(f"An error occurred: {e}")
+            LOGGER.error(f"An error occurred: {str(e)}")
 
     response_datas = []
     threads = []
@@ -147,11 +143,15 @@ def handle_random_endpoints():
 
 
 def check_latency(df: pd.DataFrame) -> bool:
-    median_latency = df["latency"].median()
-    is_median_latency_ok = median_latency < MAX_LATENCY
-    if not is_median_latency_ok:
-        LOGGER.info(f"Median latency {median_latency} is over the threshold")
-    return is_median_latency_ok
+    try:
+        median_latency = df["latency"].median()
+        is_median_latency_ok = median_latency < MAX_LATENCY
+        if not is_median_latency_ok:
+            LOGGER.info(f"Median latency {median_latency} is over the threshold")
+        return is_median_latency_ok
+    except Exception as e:
+        LOGGER.error(f"An error occurred: {str(e)}")
+        return True
 
 
 if __name__ == "__main__":
@@ -169,16 +169,11 @@ if __name__ == "__main__":
 
     running = True
 
-    if not use_workflow():
-        WORKFLOW_THREADS = 0
-
     endpoint_id = use_endpoint()
 
     LOGGER = logging.getLogger("CrawlerLogger")
     LOGGER.setLevel(logging.INFO)
-
     handler = logging.StreamHandler()
-
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
     handler.setFormatter(formatter)
     LOGGER.addHandler(handler)
@@ -190,10 +185,17 @@ if __name__ == "__main__":
         df = pd.DataFrame()
         NUMBER_OF_USERS = users
 
-        for _ in range(1):
-            data = handle_single_endpoint()
-            df = pd.concat([df, data], ignore_index=True)
+        for _ in range(get_number_of_loops()):
+            try:
+                data = handle_single_endpoint()
+                df = pd.concat([df, data], ignore_index=True)
+            except Exception as e:
+                LOGGER.error(f"An error occurred: {str(e)}")
+                continue
 
-        write_to_csv(df, endpoint_id)
+        try:
+            write_to_csv(df, endpoint_id)
+        except Exception as e:
+            LOGGER.error(f"Could not write to csv: {str(e)}")
         LOGGER.info(f"Finished running with {users} users")
         running = check_latency(df)
