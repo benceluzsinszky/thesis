@@ -3,16 +3,12 @@ from datetime import datetime, timezone
 import threading
 import pandas as pd
 import random
-import tqdm
+import logging
 
 from Args import (
-    get_number_of_threads,
-    get_number_of_loops,
     use_workflow,
     use_endpoint,
-    use_random,
     get_config_path,
-    use_csv_file,
 )
 
 from FileIO import load_config_file, write_to_csv
@@ -64,21 +60,24 @@ def send_request(
 
 def handle_single_endpoint():
     def thread_request():
-        barrier.wait()
+        try:
+            barrier.wait()
 
-        response_data = send_request(
-            endpoint=path,
-            request_method=request_method,
-            content_type=content_type,
-            parameters=parameters,
-        )
+            response_data = send_request(
+                endpoint=path,
+                request_method=request_method,
+                content_type=content_type,
+                parameters=parameters,
+            )
 
-        response_datas.append(response_data)
+            response_datas.append(response_data)
+        except Exception as e:
+            LOGGER.error(f"An error occurred: {e}")
 
     response_datas = []
     threads = []
 
-    barrier = threading.Barrier(NUMBER_OF_THREADS)
+    barrier = threading.Barrier(NUMBER_OF_USERS)
 
     idx = use_endpoint()
     endpoint = CONFIG["endpoints"][idx]
@@ -87,7 +86,7 @@ def handle_single_endpoint():
     request_method = endpoint["method"]
     content_type = endpoint["content_type"]
 
-    for _ in range(NUMBER_OF_THREADS):
+    for _ in range(NUMBER_OF_USERS):
         thread = threading.Thread(target=thread_request)
         threads.append(thread)
         thread.start()
@@ -99,7 +98,7 @@ def handle_single_endpoint():
         response_datas, columns=["timestamp", "latency", "endpoint"]
     )
     raw_data["test_type"] = f"user_profile_{idx}"
-    raw_data["load"] = NUMBER_OF_THREADS
+    raw_data["load"] = NUMBER_OF_USERS
 
     return raw_data
 
@@ -128,9 +127,9 @@ def handle_random_endpoints():
     response_datas = []
     threads = []
 
-    barrier = threading.Barrier(NUMBER_OF_THREADS)
+    barrier = threading.Barrier(NUMBER_OF_USERS)
 
-    for _ in range(NUMBER_OF_THREADS):
+    for _ in range(NUMBER_OF_USERS):
         thread = threading.Thread(target=thread_request)
         threads.append(thread)
         thread.start()
@@ -142,17 +141,24 @@ def handle_random_endpoints():
         response_datas, columns=["timestamp", "latency", "endpoint"]
     )
     raw_data["test_type"] = "random"
-    raw_data["load"] = NUMBER_OF_THREADS
+    raw_data["load"] = NUMBER_OF_USERS
 
     return raw_data
 
 
+def check_latency(df: pd.DataFrame) -> bool:
+    median_latency = df["latency"].median()
+    is_median_latency_ok = median_latency < MAX_LATENCY
+    if not is_median_latency_ok:
+        LOGGER.info(f"Median latency {median_latency} is over the threshold")
+    return is_median_latency_ok
+
+
 if __name__ == "__main__":
-    NUMBER_OF_THREADS = get_number_of_threads()
+    MAX_LATENCY = 5
+
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
-
-    WORKFLOW_THREADS = [1, 10, 25, 50]
 
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
@@ -161,26 +167,33 @@ if __name__ == "__main__":
 
     RW_SESSION_ID = prepare_sessions()
 
-    df = pd.DataFrame()
+    running = True
 
     if not use_workflow():
-        WORKFLOW_THREADS = [NUMBER_OF_THREADS]
+        WORKFLOW_THREADS = 0
 
-    total_iterations = len(WORKFLOW_THREADS) * get_number_of_loops()
+    endpoint_id = use_endpoint()
 
-    with tqdm.tqdm(total=total_iterations, desc="Progress") as pbar:
-        for threads in WORKFLOW_THREADS:
-            NUMBER_OF_THREADS = threads
-            for _ in range(get_number_of_loops()):
-                if use_endpoint() is not None:
-                    data = handle_single_endpoint()
-                elif use_random():
-                    data = handle_random_endpoints()
-                else:
-                    print("Add argument or -e or -r")
-                    break
-                df = pd.concat([df, data], ignore_index=True)
-                pbar.update(1)
+    LOGGER = logging.getLogger("CrawlerLogger")
+    LOGGER.setLevel(logging.INFO)
 
-    if use_csv_file():
-        write_to_csv(df)
+    handler = logging.StreamHandler()
+
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+    handler.setFormatter(formatter)
+    LOGGER.addHandler(handler)
+
+    # while running:
+    LOGGER.info("Starting stress test")
+    for users in range(1, 5):
+        LOGGER.info(f"Running with {users} users")
+        df = pd.DataFrame()
+        NUMBER_OF_USERS = users
+
+        for _ in range(1):
+            data = handle_single_endpoint()
+            df = pd.concat([df, data], ignore_index=True)
+
+        write_to_csv(df, endpoint_id)
+        LOGGER.info(f"Finished running with {users} users")
+        running = check_latency(df)
