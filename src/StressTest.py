@@ -29,6 +29,12 @@ def get_user_session(email: str, password: str) -> str:
     return response.json()["session"]
 
 
+def prepare_sessions() -> int:
+    url = f"{BASE_URL}/exercise_session_start?session={SESSION}"
+    response = requests.post(url)
+    return response.json()["id"]
+
+
 def send_request(
     request_method: str,
     endpoint: str,
@@ -40,8 +46,10 @@ def send_request(
         if "query" in parameters:
             url += f"&{parameters['query']}"
         headers = {"Content-Type": f"application/{content_type}"}
+        if "session_update" in endpoint:
+            parameters["id"] = RW_SESSION_ID
         request_method = getattr(requests, request_method.lower())
-        response = request_method(url, data=parameters, headers=headers)  #
+        response = request_method(url, data=parameters, headers=headers)
         if response.status_code != 200:
             print(f"Error at {endpoint}: {response.status_code}")
             return [datetime.now(timezone.utc), "N/A", endpoint]
@@ -150,6 +158,8 @@ if __name__ == "__main__":
     email = CONFIG["email"]
     password = CONFIG["password"]
     SESSION = get_user_session(email, password)
+
+    RW_SESSION_ID = prepare_sessions()
 
     df = pd.DataFrame()
 

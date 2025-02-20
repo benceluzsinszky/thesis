@@ -32,7 +32,7 @@ parser.add_argument(
     "-c",
     type=str,
     help="The path to the config file.",
-    default="config.json",
+    default="src/config.json",
 )
 parser.add_argument("--random", "-r", action="store_true", help="Use random endpoints.")
 

@@ -19,18 +19,16 @@
     },
     {
       "id": 1,
-      "path": "/session/test@itu.dk",
+      "path": "/reading_session_update",
       "method": "POST",
       "content_type": "x-www-form-urlencoded",
-      "parameters": {
-        "password": "tester"
-      }
+      "parameters": {}
     },
     {
       "id": 2,
-      "path": "/available_languages",
-      "method": "GET",
-      "content_type": "json",
+      "path": "/exercise_session_update",
+      "method": "POST",
+      "content_type": "x-www-form-urlencoded",
       "parameters": {}
     },
     {
@@ -42,54 +40,7 @@
     },
     {
       "id": 4,
-      "path": "/user_article",
-      "method": "GET",
-      "content_type": "json",
-      "parameters": {
-        "query": "article_id=2130619"
-      }
-    },
-    {
-      "id": 5,
-      "path": "/user_articles/recommended",
-      "method": "GET",
-      "content_type": "json",
-      "parameters": {}
-    },
-    {
-      "id": 6,
-      "path": "/get_total_bookmarks_in_pipeline",
-      "method": "GET",
-      "content_type": "json",
-      "parameters": {
-        "word": "kartoffel"
-      }
-    },
-    {
-      "id": 7,
-      "path": "/top_bookmarks_to_study",
-      "method": "GET",
-      "content_type": "json",
-      "parameters": {}
-    },
-    {
-      "id": 8,
-      "path": "/validate",
-      "method": "GET",
-      "content_type": "json",
-      "parameters": {}
-    },
-    {
-      "id": 9,
-      "path": "/scheduled_bookmarks_to_study/1",
-      "method": "GET",
-      "content_type": "json",
-      "parameters": {}
-    },
-
-    {
-      "id": 10,
-      "path": "/get_user_details",
+      "path": "/available_languages",
       "method": "GET",
       "content_type": "json",
       "parameters": {}
