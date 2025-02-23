@@ -46,6 +46,8 @@ def send_request(
             print(f"Error at {endpoint}: {response.status_code}")
             return [datetime.now(timezone.utc), "N/A", endpoint]
         response_time = response.elapsed.total_seconds()
+        LOGGER.info(f"Request to {endpoint} completed in {response_time} seconds")
+
         data = [datetime.now(timezone.utc), response_time, endpoint]
         return data
 
@@ -81,6 +83,9 @@ def handle_single_endpoint():
     parameters = endpoint["parameters"]
     request_method = endpoint["method"]
     content_type = endpoint["content_type"]
+
+    LOGGER.info(f"Handling endpoint: {path} with {NUMBER_OF_USERS} users")
+
 
     for _ in range(NUMBER_OF_USERS):
         thread = threading.Thread(target=thread_request)
@@ -159,6 +164,7 @@ if __name__ == "__main__":
 
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
+
 
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]

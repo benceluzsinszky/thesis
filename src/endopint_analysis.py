@@ -27,6 +27,8 @@ df["vector_length"] = np.sqrt(df["hits"] ** 2 + df["latency"] ** 2)
 
 df["hits_normalized"] = df["hits"] / df["hits"].max()
 df["latency_normalized"] = df["latency"] / df["latency"].max()
+
+# normalized_length of the hits(y) latency(x) vector
 df["normalized_length"] = np.sqrt(
     df["hits_normalized"] ** 2 + df["latency_normalized"] ** 2
 )
