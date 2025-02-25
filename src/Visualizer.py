@@ -23,7 +23,8 @@ def throughput(df: pd.DataFrame):
                 time_deltas.append(time_delta)
 
         if time_deltas:
-            median_time_delta = np.median(time_deltas)
+            median_time_delta = np.mean(time_deltas)
+
             if median_time_delta < 1:
                 median_time_delta = 1
 
@@ -32,9 +33,11 @@ def throughput(df: pd.DataFrame):
 
     throughput_df = pd.DataFrame(throughput_data, columns=["load", "throughput"])
 
+    throughput_df["throughput"] = throughput_df["throughput"].ewm(span=5).mean()
+
     throughput_df = throughput_df.sort_values(by="load")
 
-    plt.plot(throughput_df["load"], throughput_df["throughput"])
+    plt.plot(throughput_df["load"], throughput_df["throughput"], marker="o")
     plt.ylabel("Throughput [TPS]")
     plt.xlabel("Concurrent Users")
     plt.tick_params(axis="both", which="major")
@@ -60,7 +63,7 @@ def latency_histogram_of_load(df: pd.DataFrame, load_point: int):
 
     plt.xlabel("Latency [s]", fontsize=18)
     plt.ylabel("Count", fontsize=18)
-    plt.xlim(left=0, right=1.5)
+    plt.xlim(left=0)
     plt.axvline(
         x=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold Latency"
     )
@@ -70,7 +73,7 @@ def latency_histogram_of_load(df: pd.DataFrame, load_point: int):
 
 
 def latency_histogram_sum(df: pd.DataFrame):
-    load_values = [1, 2, 4, 5, 10, 20, 50, 100, 200]
+    load_values = df["load"].unique()
     df = df[df["load"].isin(load_values)]
 
     sns.set_theme(style="whitegrid")
@@ -100,25 +103,25 @@ def latency_histogram_sum(df: pd.DataFrame):
     plt.show()
 
 
-def latency_curve(df: pd.DataFrame, load: int = 1):
-    # Filter the data if necessary
-    df = df[df["load"] == load]  # Uncomment and modify if you need to filter by load
+def latency_curve(df: pd.DataFrame):
+    grouped = df.groupby("load")
 
-    sns.set_theme(style="whitegrid")
+    median_latency_data = []
+    for load, group in grouped:
+        median_latency = group["latency"].median()
+        median_latency_data.append((load, median_latency))
 
-    plt.figure(figsize=(12, 8))
-
-    # Plot latency vs. number of requests (index)
-    plt.plot(df.index, df["latency"], label="Latency")
-
-    plt.axhline(
-        y=LATENCY_THRESHOLD, color="red", linestyle="--", label="Threshold Latency"
+    median_latency_df = pd.DataFrame(
+        median_latency_data, columns=["load", "median_latency"]
     )
 
-    plt.xlabel("Number of Requests", fontsize=18)
-    plt.ylabel("Latency [s]", fontsize=18)
-    plt.legend(fontsize=16)
+    plt.figure(figsize=(12, 8))
+    plt.plot(median_latency_df["load"], median_latency_df["median_latency"], marker="o")
+    plt.xlabel("Concurrent Users (Load)", fontsize=18)
+    plt.ylabel("Median Latency [s]", fontsize=18)
+    plt.title("Median Latency vs. Concurrent Users", fontsize=20)
     plt.tick_params(axis="both", which="major", labelsize=16)
+    plt.grid(True)
 
     plt.show()
 
@@ -206,7 +209,7 @@ if __name__ == "__main__":
     file = "./results/3.csv"
     df = pd.read_csv(file)
     throughput(df)
-    # latency_histogram_of_load(df, 4)
+    # latency_histogram_of_load(df, 13)
     # latency_histogram_sum(df)
-    # latency_curve(df, 10)
+    latency_curve(df)
     # histogram_3d(df)
