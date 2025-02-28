@@ -150,10 +150,14 @@ if __name__ == "__main__":
     LOGGER.info("Starting stress test")
     for i in endpoints:
         endpoint_id = i["id"]
-        LOGGER.info(f"Starting test for endpoint: {i['path']}")
-        # while running:
-        for users in range(1, 3):
-            LOGGER.info(f"Testing {i['path']} with {users} users")
+        path = i["path"]
+        file_name_path = path[1:].replace("/", "_")
+        now = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file_name = f"{file_name_path}_{now}.csv"
+        LOGGER.info(f"Starting test for endpoint: {path}")
+        while running:
+            # for users in range(1, 4):
+            LOGGER.info(f"Testing {path} with {users} users")
             NUMBER_OF_USERS = users
 
             df = pd.DataFrame()
@@ -167,13 +171,13 @@ if __name__ == "__main__":
                     continue
 
             try:
-                write_to_csv(df, endpoint_id)
+                write_to_csv(df, output_file_name)
             except Exception as e:
                 LOGGER.error(f"Could not write to csv: {e}")
-            LOGGER.info(f"Finished testing {i['path']} with {users} users")
+            LOGGER.info(f"Finished testing {path} with {users} users")
             running = check_latency(df)
             users += 1
 
-        LOGGER.info(f"Finished test for endpoint: {i['path']}")
+        LOGGER.info(f"Finished test for endpoint: {path}")
 
     LOGGER.info("Stress test finished")

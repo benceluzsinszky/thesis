@@ -3,9 +3,7 @@ import json
 import os
 
 
-def write_to_csv(data: pd.DataFrame, endpoint: str) -> None:
-    file_name = f"{endpoint}.csv"
-
+def write_to_csv(data: pd.DataFrame, file_name: str) -> None:
     base_dir = os.path.dirname(os.path.abspath(__file__))
     results_dir = os.path.join(base_dir, "..", "results")
     path = os.path.join(results_dir, file_name)
