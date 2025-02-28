@@ -55,7 +55,7 @@ def send_request(
         return [datetime.now(timezone.utc), "N/A", endpoint]
 
 
-def handle_single_endpoint() -> dict:
+def handle_single_endpoint(idx) -> dict:
     def thread_request():
         try:
             barrier.wait()
@@ -76,7 +76,6 @@ def handle_single_endpoint() -> dict:
 
     barrier = threading.Barrier(NUMBER_OF_USERS)
 
-    idx = use_endpoint()
     endpoint = CONFIG["endpoints"][idx]
     path = endpoint["path"]
     parameters = endpoint["parameters"]
@@ -134,7 +133,10 @@ if __name__ == "__main__":
 
     running = True
 
-    endpoint_id = use_endpoint()
+    if use_endpoint():
+        endpoints = [CONFIG["endpoints"][use_endpoint()]]
+    else:
+        endpoints = CONFIG["endpoints"]
 
     LOGGER = logging.getLogger("StressTestLogger")
     LOGGER.setLevel(logging.INFO)
@@ -146,24 +148,32 @@ if __name__ == "__main__":
     users = 1
 
     LOGGER.info("Starting stress test")
-    while running:
-        # for users in range(1, 5):
-        LOGGER.info(f"Running with {users} users")
-        df = pd.DataFrame()
-        NUMBER_OF_USERS = users
+    for i in endpoints:
+        endpoint_id = i["id"]
+        LOGGER.info(f"Starting test for endpoint: {i['path']}")
+        # while running:
+        for users in range(1, 3):
+            LOGGER.info(f"Testing {i['path']} with {users} users")
+            NUMBER_OF_USERS = users
 
-        for _ in range(get_number_of_loops()):
+            df = pd.DataFrame()
+
+            for _ in range(get_number_of_loops()):
+                try:
+                    data_df = handle_single_endpoint(endpoint_id)
+                    df = pd.concat([df, data_df], ignore_index=True)
+                except Exception as e:
+                    LOGGER.error(f"An error occurred during loop: {e}")
+                    continue
+
             try:
-                data_df = handle_single_endpoint()
-                df = pd.concat([df, data_df], ignore_index=True)
+                write_to_csv(df, endpoint_id)
             except Exception as e:
-                LOGGER.error(f"An error occurred during loop: {e}")
-                continue
+                LOGGER.error(f"Could not write to csv: {e}")
+            LOGGER.info(f"Finished testing {i['path']} with {users} users")
+            running = check_latency(df)
+            users += 1
 
-        try:
-            write_to_csv(df, endpoint_id)
-        except Exception as e:
-            LOGGER.error(f"Could not write to csv: {e}")
-        LOGGER.info(f"Finished running with {users} users")
-        running = check_latency(df)
-        users += 1
+        LOGGER.info(f"Finished test for endpoint: {i['path']}")
+
+    LOGGER.info("Stress test finished")
