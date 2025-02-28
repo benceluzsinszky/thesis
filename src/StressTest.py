@@ -77,6 +77,7 @@ def handle_single_endpoint():
 
     barrier = threading.Barrier(NUMBER_OF_USERS)
 
+
     idx = use_endpoint()
     endpoint = CONFIG["endpoints"][idx]
     path = endpoint["path"]
