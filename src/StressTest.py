@@ -2,7 +2,6 @@ import requests
 from datetime import datetime, timezone
 import threading
 import pandas as pd
-import random
 import logging
 
 from Args import use_endpoint, get_config_path, get_number_of_loops
@@ -46,17 +45,17 @@ def send_request(
             print(f"Error at {endpoint}: {response.status_code}")
             return [datetime.now(timezone.utc), "N/A", endpoint]
         response_time = response.elapsed.total_seconds()
-        LOGGER.info(f"Request to {endpoint} completed in {response_time} seconds")
+        LOGGER.debug(f"Request to {endpoint} completed in {response_time} seconds")
 
         data = [datetime.now(timezone.utc), response_time, endpoint]
         return data
 
     except Exception as e:
-        LOGGER.error(f"An error occurred: {str(e)}")
+        LOGGER.error(f"An error occurred during sending request: {e}")
         return [datetime.now(timezone.utc), "N/A", endpoint]
 
 
-def handle_single_endpoint():
+def handle_single_endpoint() -> dict:
     def thread_request():
         try:
             barrier.wait()
@@ -70,7 +69,7 @@ def handle_single_endpoint():
 
             response_datas.append(response_data)
         except Exception as e:
-            LOGGER.error(f"An error occurred: {str(e)}")
+            LOGGER.error(f"An error occurred during sending threaded request: {e}")
 
     response_datas = []
     threads = []
@@ -85,51 +84,7 @@ def handle_single_endpoint():
     request_method = endpoint["method"]
     content_type = endpoint["content_type"]
 
-    LOGGER.info(f"Handling endpoint: {path} with {NUMBER_OF_USERS} users")
-
-
-    for _ in range(NUMBER_OF_USERS):
-        thread = threading.Thread(target=thread_request)
-        threads.append(thread)
-        thread.start()
-
-    for thread in threads:
-        thread.join()
-
-    raw_data = pd.DataFrame(
-        response_datas, columns=["timestamp", "latency", "endpoint"]
-    )
-    raw_data["test_type"] = f"user_profile_{idx}"
-    raw_data["load"] = NUMBER_OF_USERS
-
-    return raw_data
-
-
-def handle_random_endpoints():
-    def thread_request():
-        barrier.wait()
-
-        random_idx = random.randint(0, len(CONFIG["endpoints"]) - 1)
-        endpoint = CONFIG["endpoints"][random_idx]
-
-        path = endpoint["path"]
-        request_method = endpoint["method"]
-        content_type = endpoint["content_type"]
-        parameters = endpoint["parameters"]
-
-        response_data = send_request(
-            endpoint=path,
-            request_method=request_method,
-            content_type=content_type,
-            parameters=parameters,
-        )
-
-        response_datas.append(response_data)
-
-    response_datas = []
-    threads = []
-
-    barrier = threading.Barrier(NUMBER_OF_USERS)
+    LOGGER.debug(f"Handling endpoint: {path} with {NUMBER_OF_USERS} users")
 
     for _ in range(NUMBER_OF_USERS):
         thread = threading.Thread(target=thread_request)
@@ -139,33 +94,37 @@ def handle_random_endpoints():
     for thread in threads:
         thread.join()
 
-    raw_data = pd.DataFrame(
-        response_datas, columns=["timestamp", "latency", "endpoint"]
-    )
-    raw_data["test_type"] = "random"
-    raw_data["load"] = NUMBER_OF_USERS
+    data = pd.DataFrame(response_datas, columns=["timestamp", "latency", "endpoint"])
+    data["load"] = NUMBER_OF_USERS
 
-    return raw_data
+    return data
 
 
 def check_latency(df: pd.DataFrame) -> bool:
     try:
+        df = df[df["latency"].notna() & (df["latency"] != "N/A")]
+        if df.empty:
+            LOGGER.info("No valid latency data available, stopping test")
+            return False
+
         median_latency = df["latency"].median()
+        LOGGER.info(f"Median latency: {median_latency}")
         is_median_latency_ok = median_latency < MAX_LATENCY
         if not is_median_latency_ok:
-            LOGGER.info(f"Median latency {median_latency} is over the threshold")
+            LOGGER.info(
+                f"Median latency {median_latency} is over the threshold, stopping test"
+            )
         return is_median_latency_ok
     except Exception as e:
-        LOGGER.error(f"An error occurred: {str(e)}")
+        LOGGER.error(f"An error occurred during checking latency: {e}")
         return True
 
 
 if __name__ == "__main__":
-    MAX_LATENCY = 5
+    MAX_LATENCY = 3
 
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
-
 
     BASE_URL = CONFIG["base_url"]
     email = CONFIG["email"]
@@ -178,31 +137,34 @@ if __name__ == "__main__":
 
     endpoint_id = use_endpoint()
 
-    LOGGER = logging.getLogger("CrawlerLogger")
+    LOGGER = logging.getLogger("StressTestLogger")
     LOGGER.setLevel(logging.INFO)
     handler = logging.StreamHandler()
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
     handler.setFormatter(formatter)
     LOGGER.addHandler(handler)
 
-    # while running:
+    users = 1
+
     LOGGER.info("Starting stress test")
-    for users in range(1, 5):
+    while running:
+        # for users in range(1, 5):
         LOGGER.info(f"Running with {users} users")
         df = pd.DataFrame()
         NUMBER_OF_USERS = users
 
         for _ in range(get_number_of_loops()):
             try:
-                data = handle_single_endpoint()
-                df = pd.concat([df, data], ignore_index=True)
+                data_df = handle_single_endpoint()
+                df = pd.concat([df, data_df], ignore_index=True)
             except Exception as e:
-                LOGGER.error(f"An error occurred: {str(e)}")
+                LOGGER.error(f"An error occurred during loop: {e}")
                 continue
 
         try:
             write_to_csv(df, endpoint_id)
         except Exception as e:
-            LOGGER.error(f"Could not write to csv: {str(e)}")
+            LOGGER.error(f"Could not write to csv: {e}")
         LOGGER.info(f"Finished running with {users} users")
         running = check_latency(df)
+        users += 1
