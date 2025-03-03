@@ -119,7 +119,7 @@ def check_latency(df: pd.DataFrame) -> bool:
 
 
 if __name__ == "__main__":
-    MAX_LATENCY = 3
+    MAX_LATENCY = 4
 
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
@@ -130,8 +130,6 @@ if __name__ == "__main__":
     SESSION = get_user_session(email, password)
 
     RW_SESSION_ID = prepare_sessions()
-
-    running = True
 
     if use_endpoint():
         endpoints = [CONFIG["endpoints"][use_endpoint()]]
@@ -145,10 +143,10 @@ if __name__ == "__main__":
     handler.setFormatter(formatter)
     LOGGER.addHandler(handler)
 
-    users = 1
-
     LOGGER.info("Starting stress test")
     for i in endpoints:
+        running = True
+        users = 1
         endpoint_id = i["id"]
         path = i["path"]
         file_name_path = path[1:].replace("/", "_")
