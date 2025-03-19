@@ -206,10 +206,10 @@ def histogram_3d(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    file = "./results/3.csv"
+    file = "./results/1.csv"
     df = pd.read_csv(file)
-    throughput(df)
+    # throughput(df)
     # latency_histogram_of_load(df, 13)
     # latency_histogram_sum(df)
-    latency_curve(df)
-    # histogram_3d(df)
+    # latency_curve(df)
+    histogram_3d(df)

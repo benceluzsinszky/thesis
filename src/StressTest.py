@@ -55,7 +55,7 @@ def send_request(
         return [datetime.now(timezone.utc), "N/A", endpoint]
 
 
-def handle_single_endpoint() -> dict:
+def handle_single_endpoint(idx) -> dict:
     def thread_request():
         try:
             barrier.wait()
@@ -76,8 +76,6 @@ def handle_single_endpoint() -> dict:
 
     barrier = threading.Barrier(NUMBER_OF_USERS)
 
-
-    idx = use_endpoint()
     endpoint = CONFIG["endpoints"][idx]
     path = endpoint["path"]
     parameters = endpoint["parameters"]
@@ -121,7 +119,7 @@ def check_latency(df: pd.DataFrame) -> bool:
 
 
 if __name__ == "__main__":
-    MAX_LATENCY = 3
+    MAX_LATENCY = 4
 
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
@@ -133,9 +131,10 @@ if __name__ == "__main__":
 
     RW_SESSION_ID = prepare_sessions()
 
-    running = True
-
-    endpoint_id = use_endpoint()
+    if use_endpoint():
+        endpoints = [CONFIG["endpoints"][use_endpoint()]]
+    else:
+        endpoints = CONFIG["endpoints"]
 
     LOGGER = logging.getLogger("StressTestLogger")
     LOGGER.setLevel(logging.INFO)
@@ -144,27 +143,39 @@ if __name__ == "__main__":
     handler.setFormatter(formatter)
     LOGGER.addHandler(handler)
 
-    users = 1
-
     LOGGER.info("Starting stress test")
-    while running:
-        # for users in range(1, 5):
-        LOGGER.info(f"Running with {users} users")
-        df = pd.DataFrame()
-        NUMBER_OF_USERS = users
+    for i in endpoints:
+        running = True
+        users = 1
+        endpoint_id = i["id"]
+        path = i["path"]
+        file_name_path = path[1:].replace("/", "_")
+        now = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file_name = f"{file_name_path}_{now}.csv"
+        LOGGER.info(f"Starting test for endpoint: {path}")
+        while running:
+            # for users in range(1, 4):
+            LOGGER.info(f"Testing {path} with {users} users")
+            NUMBER_OF_USERS = users
 
-        for _ in range(get_number_of_loops()):
+            df = pd.DataFrame()
+
+            for _ in range(get_number_of_loops()):
+                try:
+                    data_df = handle_single_endpoint(endpoint_id)
+                    df = pd.concat([df, data_df], ignore_index=True)
+                except Exception as e:
+                    LOGGER.error(f"An error occurred during loop: {e}")
+                    continue
+
             try:
-                data_df = handle_single_endpoint()
-                df = pd.concat([df, data_df], ignore_index=True)
+                write_to_csv(df, output_file_name)
             except Exception as e:
-                LOGGER.error(f"An error occurred during loop: {e}")
-                continue
+                LOGGER.error(f"Could not write to csv: {e}")
+            LOGGER.info(f"Finished testing {path} with {users} users")
+            running = check_latency(df)
+            users += 1
 
-        try:
-            write_to_csv(df, endpoint_id)
-        except Exception as e:
-            LOGGER.error(f"Could not write to csv: {e}")
-        LOGGER.info(f"Finished running with {users} users")
-        running = check_latency(df)
-        users += 1
+        LOGGER.info(f"Finished test for endpoint: {path}")
+
+    LOGGER.info("Stress test finished")
