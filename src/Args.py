@@ -47,6 +47,7 @@ parser.add_argument(
     "--skip",
     "-s",
     help="Increment users by 10 every iteration, instead of 1.",
+    action="store_true",
 )
 
 args = parser.parse_args()
