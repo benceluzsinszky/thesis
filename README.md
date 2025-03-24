@@ -46,6 +46,7 @@ Define the scope of the stress tests—specifically, the number of threads (repr
 - `--loops` or `-l`: The number of times the simulation will run for each load level. Default is 1.
 - `--endpoint` or `-e`: Use a single endpoint. Provide the index of the endpoint from the config file. Without this argument, the test will run with all endpoints.
 - `--threads` or `-t`: The number of threads to use. Without this argument, the test will run, until the median response time exceeds 2 seconds.
+- `--skip` or `-s`: Increment user count by 10 instead of 1 in each iteration.
 
 ### Example Usage
 

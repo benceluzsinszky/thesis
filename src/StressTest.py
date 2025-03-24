@@ -6,6 +6,7 @@ import logging
 
 from Args import (
     use_endpoint,
+    use_skip,
     get_config_path,
     get_number_of_loops,
     get_number_of_threads,
@@ -148,6 +149,8 @@ if __name__ == "__main__":
     handler.setFormatter(formatter)
     LOGGER.addHandler(handler)
 
+    is_skip = use_skip()
+
     LOGGER.info("Starting stress test")
     for i in endpoints:
         running = True
@@ -179,7 +182,13 @@ if __name__ == "__main__":
                 LOGGER.error(f"Could not write to csv: {e}")
             LOGGER.info(f"Finished testing {path} with {users} users")
             running = check_latency(df)
-            users += 1
+            if is_skip:
+                if users == 1:
+                    users = 10
+                else:
+                    users += 10
+            else:
+                users += 1
 
             if get_number_of_threads() > 1:
                 break

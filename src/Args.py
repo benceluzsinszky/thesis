@@ -43,6 +43,12 @@ parser.add_argument(
     action="store_true",
 )
 
+parser.add_argument(
+    "--skip",
+    "-s",
+    help="Increment users by 10 every iteration, instead of 1.",
+)
+
 args = parser.parse_args()
 
 
@@ -52,6 +58,10 @@ def get_number_of_threads() -> int:
 
 def get_number_of_loops() -> int:
     return args.loops
+
+
+def use_skip() -> bool:
+    return args.skip
 
 
 def use_workflow() -> bool:
