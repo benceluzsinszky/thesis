@@ -124,7 +124,7 @@ def check_latency(df: pd.DataFrame) -> bool:
 
 
 if __name__ == "__main__":
-    MAX_LATENCY = 4
+    MAX_LATENCY = 2
 
     CONFIG_PATH = get_config_path()
     CONFIG = load_config_file(CONFIG_PATH)
