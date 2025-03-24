@@ -4,7 +4,12 @@ import threading
 import pandas as pd
 import logging
 
-from Args import use_endpoint, get_config_path, get_number_of_loops
+from Args import (
+    use_endpoint,
+    get_config_path,
+    get_number_of_loops,
+    get_number_of_threads,
+)
 
 from FileIO import load_config_file, write_to_csv
 
@@ -146,7 +151,7 @@ if __name__ == "__main__":
     LOGGER.info("Starting stress test")
     for i in endpoints:
         running = True
-        users = 1
+        users = get_number_of_threads()
         endpoint_id = i["id"]
         path = i["path"]
         file_name_path = path[1:].replace("/", "_")
@@ -173,6 +178,8 @@ if __name__ == "__main__":
             except Exception as e:
                 LOGGER.error(f"Could not write to csv: {e}")
             LOGGER.info(f"Finished testing {path} with {users} users")
+            if get_number_of_threads() > 1:
+                break
             running = check_latency(df)
             users += 1
 

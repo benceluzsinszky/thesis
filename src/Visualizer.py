@@ -8,7 +8,7 @@ LATENCY_THRESHOLD = 2
 
 
 def throughput(df: pd.DataFrame):
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="ISO8601")
 
     grouped = df.groupby("load")
 
@@ -33,11 +33,11 @@ def throughput(df: pd.DataFrame):
 
     throughput_df = pd.DataFrame(throughput_data, columns=["load", "throughput"])
 
-    throughput_df["throughput"] = throughput_df["throughput"].ewm(span=5).mean()
+    throughput_df["throughput"] = throughput_df["throughput"].ewm(span=25).mean()
 
     throughput_df = throughput_df.sort_values(by="load")
 
-    plt.plot(throughput_df["load"], throughput_df["throughput"], marker="o")
+    plt.plot(throughput_df["load"], throughput_df["throughput"])
     plt.ylabel("Throughput [TPS]")
     plt.xlabel("Concurrent Users")
     plt.tick_params(axis="both", which="major")
@@ -45,14 +45,14 @@ def throughput(df: pd.DataFrame):
     plt.show()
 
 
-def latency_histogram_of_load(df: pd.DataFrame, load_point: int):
-    sns.set_theme(style="whitegrid")
+def latency_histogram_of_load(df: pd.DataFrame, load: int):
+    df = df[df["load"] == load]
 
-    df_load = df[df["load"] == load_point]
+    sns.set_theme(style="whitegrid")
 
     plt.figure(figsize=(12, 8))
     sns.histplot(
-        data=df_load,
+        data=df,
         x="latency",
         hue="load",
         multiple="stack",
@@ -114,6 +114,9 @@ def latency_curve(df: pd.DataFrame):
     median_latency_df = pd.DataFrame(
         median_latency_data, columns=["load", "median_latency"]
     )
+
+    # remove last line
+    median_latency_df = median_latency_df.iloc[:-1]
 
     plt.figure(figsize=(12, 8))
     plt.plot(median_latency_df["load"], median_latency_df["median_latency"], marker="o")
@@ -205,11 +208,26 @@ def histogram_3d(df: pd.DataFrame):
     plt.show()
 
 
+def check_latency(df: pd.DataFrame, load: int) -> None:
+    df = df[df["load"] == load]
+    df = df[df["latency"].notna() & (df["latency"] != "N/A")]
+    median_latency = df["latency"].median()
+    print(median_latency)
+
+
 if __name__ == "__main__":
-    file = "./results/1.csv"
+    # file = "./results/available_languages_gunicorn_w_4_2.csv"
+    # file = "./results/exercise_session_update_gunicorn_w_4_2.csv"
+    file = "./results/reading_session_update_apache.csv"
+    # file = "./results/upload_user_activity_data_gunicorn_w_4_2.csv"
+    # file = "./results/user_articles_recommended_gunicorn_w_4_2.csv"
+
     df = pd.read_csv(file)
+
     # throughput(df)
-    # latency_histogram_of_load(df, 13)
+    latency_histogram_of_load(df, 277)
     # latency_histogram_sum(df)
     # latency_curve(df)
-    histogram_3d(df)
+    # histogram_3d(df)
+
+    # check_latency(df, 355)
