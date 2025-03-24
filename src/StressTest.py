@@ -46,7 +46,7 @@ def send_request(
         if "session_update" in endpoint:
             parameters["id"] = RW_SESSION_ID
         request_method = getattr(requests, request_method.lower())
-        response = request_method(url, data=parameters, headers=headers)
+        response = request_method(url, data=parameters, headers=headers, timeout=10)
         if response.status_code != 200:
             print(f"Error at {endpoint}: {response.status_code}")
             return [datetime.now(timezone.utc), "N/A", endpoint]
