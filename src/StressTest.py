@@ -178,10 +178,11 @@ if __name__ == "__main__":
             except Exception as e:
                 LOGGER.error(f"Could not write to csv: {e}")
             LOGGER.info(f"Finished testing {path} with {users} users")
-            if get_number_of_threads() > 1:
-                break
             running = check_latency(df)
             users += 1
+
+            if get_number_of_threads() > 1:
+                break
 
         LOGGER.info(f"Finished test for endpoint: {path}")
 
