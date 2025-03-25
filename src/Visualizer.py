@@ -23,7 +23,7 @@ def throughput(df: pd.DataFrame):
                 time_deltas.append(time_delta)
 
         if time_deltas:
-            median_time_delta = np.mean(time_deltas)
+            median_time_delta = np.median(time_deltas)
 
             if median_time_delta < 1:
                 median_time_delta = 1
@@ -103,7 +103,7 @@ def latency_histogram_sum(df: pd.DataFrame):
     plt.show()
 
 
-def latency_curve(df: pd.DataFrame):
+def latency_curve_median(df: pd.DataFrame):
     grouped = df.groupby("load")
 
     median_latency_data = []
@@ -123,6 +123,30 @@ def latency_curve(df: pd.DataFrame):
     plt.xlabel("Concurrent Users (Load)", fontsize=18)
     plt.ylabel("Median Latency [s]", fontsize=18)
     plt.title("Median Latency vs. Concurrent Users", fontsize=20)
+    plt.tick_params(axis="both", which="major", labelsize=16)
+    plt.grid(True)
+
+    plt.show()
+
+
+def latency_curve_avg(df: pd.DataFrame):
+    grouped = df.groupby("load")
+
+    avg_latency_data = []
+    for load, group in grouped:
+        avg_latency = group["latency"].mean()
+        avg_latency_data.append((load, avg_latency))
+
+    avg_latency_df = pd.DataFrame(avg_latency_data, columns=["load", "avg_latency"])
+
+    # remove last line
+    avg_latency_df = avg_latency_df.iloc[:-1]
+
+    plt.figure(figsize=(12, 8))
+    plt.plot(avg_latency_df["load"], avg_latency_df["avg_latency"], marker="o")
+    plt.xlabel("Concurrent Users (Load)", fontsize=18)
+    plt.ylabel("Average Latency [s]", fontsize=18)
+    plt.title("Average Latency vs. Concurrent Users", fontsize=20)
     plt.tick_params(axis="both", which="major", labelsize=16)
     plt.grid(True)
 
@@ -218,16 +242,18 @@ def check_latency(df: pd.DataFrame, load: int) -> None:
 if __name__ == "__main__":
     # file = "./results/available_languages_gunicorn_w_4_2.csv"
     # file = "./results/exercise_session_update_gunicorn_w_4_2.csv"
-    file = "./results/reading_session_update_apache.csv"
+    # file = "./results/reading_session_update_apache.csv"
     # file = "./results/upload_user_activity_data_gunicorn_w_4_2.csv"
     # file = "./results/user_articles_recommended_gunicorn_w_4_2.csv"
+    file = "./results/upload_user_activity_data_gunicorn_w_4_http.csv"
 
     df = pd.read_csv(file)
 
-    # throughput(df)
-    latency_histogram_of_load(df, 277)
+    throughput(df)
+    # latency_histogram_of_load(df, 1570)
     # latency_histogram_sum(df)
-    # latency_curve(df)
+    # latency_curve_median(df)
+    # latency_curve_avg(df)
     # histogram_3d(df)
 
     # check_latency(df, 355)
