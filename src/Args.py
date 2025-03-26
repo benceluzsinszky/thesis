@@ -15,13 +15,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--workflow",
-    "-w",
-    help="Use workflow, run the simulator multiple times with increasing number of threads.",
-    action="store_true",
-)
-
-parser.add_argument(
     "--endpoint",
     "-e",
     type=int,
@@ -65,16 +58,8 @@ def use_skip() -> bool:
     return args.skip
 
 
-def use_workflow() -> bool:
-    return args.workflow
-
-
 def use_endpoint() -> int:
     return args.endpoint
-
-
-def use_random() -> bool:
-    return args.random
 
 
 def get_config_path() -> str:
