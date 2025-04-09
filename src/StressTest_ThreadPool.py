@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import threading
 import pandas as pd
 import logging
+from concurrent.futures import ThreadPoolExecutor
 
 from Args import (
     use_endpoint,
@@ -66,7 +67,7 @@ def handle_single_endpoint(idx) -> dict:
         try:
             barrier.wait()
 
-            response_data = send_request(
+            return send_request(
                 endpoint=path,
                 request_method=request_method,
                 content_type=content_type,
@@ -77,10 +78,7 @@ def handle_single_endpoint(idx) -> dict:
         except Exception as e:
             LOGGER.error(f"An error occurred during sending threaded request: {e}")
 
-    response_datas = []
-    threads = []
 
-    barrier = threading.Barrier(NUMBER_OF_USERS)
 
     endpoint = CONFIG["endpoints"][idx]
     path = endpoint["path"]
@@ -90,13 +88,12 @@ def handle_single_endpoint(idx) -> dict:
 
     LOGGER.debug(f"Handling endpoint: {path} with {NUMBER_OF_USERS} users")
 
-    for _ in range(NUMBER_OF_USERS):
-        thread = threading.Thread(target=thread_request)
-        threads.append(thread)
-        thread.start()
+    barrier = threading.Barrier(NUMBER_OF_USERS)
 
-    for thread in threads:
-        thread.join()
+
+    
+    with ThreadPoolExecutor(max_workers=NUMBER_OF_USERS) as executor:
+        response_datas = list(executor.map(lambda _: thread_request(), range(NUMBER_OF_USERS)))
 
     data = pd.DataFrame(response_datas, columns=["timestamp", "latency", "endpoint"])
     data["load"] = NUMBER_OF_USERS
