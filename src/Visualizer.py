@@ -7,7 +7,7 @@ from matplotlib import cm
 LATENCY_THRESHOLD = 2
 
 
-def throughput(df: pd.DataFrame):
+def create_throughput_df(df: pd.DataFrame):
     df["timestamp"] = pd.to_datetime(df["timestamp"], format="ISO8601")
 
     grouped = df.groupby("load")
@@ -32,10 +32,14 @@ def throughput(df: pd.DataFrame):
             throughput_data.append((load, throughput))
 
     throughput_df = pd.DataFrame(throughput_data, columns=["load", "throughput"])
-
-    throughput_df["throughput"] = throughput_df["throughput"].ewm(span=25).mean()
-
+    # throughput_df["throughput"] = throughput_df["throughput"].ewm(span=25).mean()
     throughput_df = throughput_df.sort_values(by="load")
+
+    return throughput_df
+
+
+def throughput(df: pd.DataFrame):
+    throughput_df = create_throughput_df(df)
 
     plt.plot(throughput_df["load"], throughput_df["throughput"])
     plt.ylabel("Throughput [TPS]")
@@ -129,21 +133,28 @@ def latency_curve_median(df: pd.DataFrame):
     plt.show()
 
 
-def latency_curve_avg(df: pd.DataFrame):
+def create_latency_df(df: pd.DataFrame):
     grouped = df.groupby("load")
 
-    avg_latency_data = []
+    latency_data = []
     for load, group in grouped:
-        avg_latency = group["latency"].mean()
-        avg_latency_data.append((load, avg_latency))
+        latency = group["latency"].mean()
+        latency_data.append((load, latency))
 
-    avg_latency_df = pd.DataFrame(avg_latency_data, columns=["load", "avg_latency"])
+    latency_df = pd.DataFrame(latency_data, columns=["load", "latency"])
+    # latency_df["latency"] = latency_df["latency"].ewm(span=25).mean()
 
     # remove last line
-    avg_latency_df = avg_latency_df.iloc[:-1]
+    latency_df = latency_df.iloc[:-1]
+
+    return latency_df
+
+
+def latency_curve_avg(df: pd.DataFrame):
+    avg_latency_df = create_latency_df(df)
 
     plt.figure(figsize=(12, 8))
-    plt.plot(avg_latency_df["load"], avg_latency_df["avg_latency"], marker="o")
+    plt.plot(avg_latency_df["load"], avg_latency_df["latency"], marker="o")
     plt.xlabel("Concurrent Users (Load)", fontsize=18)
     plt.ylabel("Average Latency [s]", fontsize=18)
     plt.title("Average Latency vs. Concurrent Users", fontsize=20)
@@ -153,8 +164,8 @@ def latency_curve_avg(df: pd.DataFrame):
     plt.show()
 
 
-def histogram_3d(df: pd.DataFrame):
-    df = df[df["latency"] <= 3]  # Filter data for better visualization
+def latency_histogram_3d(df: pd.DataFrame):
+    df = df[df["latency"] <= 10]  # Filter data for better visualization
 
     latency = df["latency"]
     load = df["load"]
@@ -239,21 +250,92 @@ def check_latency(df: pd.DataFrame, load: int) -> None:
     print(median_latency)
 
 
+def requests_sent_time(df: pd.DataFrame, load: int) -> None:
+    # Filter the DataFrame for the specified load
+    df = df[df["load"] == load].head(load)  # Limit to the first 'load' rows
+
+    # Convert timestamp to datetime
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="ISO8601")
+
+    # Subtract latency from timestamp to get the request sent time
+    df["sent_time"] = df["timestamp"] - pd.to_timedelta(df["latency"], unit="s")
+
+    # Normalize sent_time so the first timestamp is 0
+    first_sent_time = df["sent_time"].min()
+    df["normalized_sent_time"] = (df["sent_time"] - first_sent_time).dt.total_seconds()
+
+    # Plot the normalized sent times
+    plt.figure(figsize=(12, 8))
+    plt.scatter(df["normalized_sent_time"], df.index, alpha=0.6, label="Requests")
+    plt.xlabel("Time Since First Request (s)", fontsize=14)
+    plt.ylabel("Request Index", fontsize=14)
+    plt.title("Requests Sent Over Time", fontsize=16)
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+
+def plot_latency_and_throughput(df: pd.DataFrame):
+    throughput_df = create_throughput_df(df)
+    latency_df = create_latency_df(df)
+
+    # Create the figure and axis
+    fig, ax1 = plt.subplots(figsize=(12, 8))
+
+    # Plot throughput on the left y-axis
+    ax1.plot(
+        throughput_df["load"],
+        throughput_df["throughput"],
+        color="tab:blue",
+        marker="^",
+        label="Throughput [TPS]",
+    )
+    ax1.set_xlabel("Concurrent Users (Load)", fontsize=14)
+    ax1.set_ylabel("Throughput [TPS]", fontsize=14)
+    ax1.tick_params(axis="y")
+    ax1.tick_params(axis="both", which="major", labelsize=12)
+
+    # Create a second y-axis for latency
+    ax2 = ax1.twinx()
+    ax2.plot(
+        latency_df["load"],
+        latency_df["latency"],
+        color="tab:red",
+        marker="s",
+        label="Latency [s]",
+    )
+    ax2.set_ylabel("Latency [s]", fontsize=14)
+    ax2.tick_params(axis="y")
+
+    # Add grid and title
+    ax1.grid(True)
+    plt.title("Throughput and Latency vs. Concurrent Users", fontsize=16)
+
+    # Add legends for both axes
+    ax1.legend(loc="upper left")
+    ax2.legend(loc="upper right")
+
+    # Show the plot
+    plt.show()
+
+
 if __name__ == "__main__":
     # file = "./results/available_languages_gunicorn_w_4_2.csv"
     # file = "./results/exercise_session_update_gunicorn_w_4_2.csv"
-    # file = "./results/reading_session_update_apache.csv"
+    # file = "./results/reading_session_update_gunicorn_w_4.csv"
     # file = "./results/upload_user_activity_data_gunicorn_w_4_2.csv"
     # file = "./results/user_articles_recommended_gunicorn_w_4_2.csv"
-    file = "./results/upload_user_activity_data_gunicorn_w_4_http.csv"
+    file = "./results/exercise_session_update_gunicorn_w_4_final.csv"
 
     df = pd.read_csv(file)
 
-    throughput(df)
-    # latency_histogram_of_load(df, 1570)
-    # latency_histogram_sum(df)
-    # latency_curve_median(df)
+    # plot_latency_and_throughput(df)
+    # throughput(df)
     # latency_curve_avg(df)
-    # histogram_3d(df)
+    # latency_curve_median(df)
+    # latency_histogram_of_load(df, 2000)
+    # latency_histogram_sum(df)
+    latency_histogram_3d(df)
 
     # check_latency(df, 355)
+    # requests_sent_time(df, 1500)

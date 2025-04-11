@@ -18,6 +18,7 @@ from FileIO import load_config_file, write_to_csv
 REQUEST_COUNTER = {"value": 0}
 LOCK = Lock()
 
+
 def get_user_session(email: str, password: str) -> str:
     url = f"{BASE_URL}/session/{email}"
     headers = {
@@ -43,7 +44,7 @@ def send_request(
 ) -> datetime | None:
     try:
         url = f"{BASE_URL}{endpoint}?session={SESSION}"
-       
+
         if "query" in parameters:
             url += f"&{parameters['query']}"
         headers = {"Content-Type": f"application/{content_type}"}
@@ -66,7 +67,6 @@ def send_request(
         return [datetime.now(timezone.utc), "N/A", endpoint]
 
 
-
 def handle_single_endpoint(idx) -> dict:
     def thread_request():
         try:
@@ -74,7 +74,6 @@ def handle_single_endpoint(idx) -> dict:
 
             thread_parameters = copy.deepcopy(parameters)
 
-        
             with LOCK:
                 REQUEST_COUNTER["value"] += 1
                 thread_parameters["value"] = f"{REQUEST_COUNTER['value']}s"
@@ -150,8 +149,9 @@ if __name__ == "__main__":
 
     RW_SESSION_ID = prepare_sessions()
 
-    if use_endpoint():
-        endpoints = [CONFIG["endpoints"][use_endpoint()]]
+    endpoint_arg = use_endpoint()
+    if endpoint_arg is not None:
+        endpoints = [CONFIG["endpoints"][int(endpoint_arg)]]
     else:
         endpoints = CONFIG["endpoints"]
 
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file_name = f"{file_name_path}_{now}.csv"
         LOGGER.info(f"Starting test for endpoint: {path}")
-        
+
         while running:
             # for users in range(1, 4):
             LOGGER.info(f"Testing {path} with {users} users")
