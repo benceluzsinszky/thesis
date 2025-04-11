@@ -48,9 +48,6 @@ def send_request(
             url += f"&{parameters['query']}"
         headers = {"Content-Type": f"application/{content_type}"}
 
-        # if "value" in parameters:
-        #     REQUEST_COUNTER["value"] += 1
-        #     parameters["value"] = f"{REQUEST_COUNTER['value']}s"
         if "session_update" in endpoint:
             parameters["id"] = RW_SESSION_ID
         request_method = getattr(requests, request_method.lower())
@@ -77,7 +74,7 @@ def handle_single_endpoint(idx) -> dict:
 
             thread_parameters = copy.deepcopy(parameters)
 
-            # ✅ Safe increment using lock
+        
             with LOCK:
                 REQUEST_COUNTER["value"] += 1
                 thread_parameters["value"] = f"{REQUEST_COUNTER['value']}s"
