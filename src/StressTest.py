@@ -5,6 +5,8 @@ from threading import Lock
 import pandas as pd
 import logging
 import copy
+import random
+import sys
 from Args import (
     use_endpoint,
     use_skip,
@@ -70,13 +72,10 @@ def send_request(
 def handle_single_endpoint(idx) -> dict:
     def thread_request():
         try:
-            barrier.wait()
-
             thread_parameters = copy.deepcopy(parameters)
+            thread_parameters["value"] = random.randint(0, sys.maxsize)
 
-            with LOCK:
-                REQUEST_COUNTER["value"] += 1
-                thread_parameters["value"] = f"{REQUEST_COUNTER['value']}s"
+            barrier.wait()
 
             response_data = send_request(
                 endpoint=path,
