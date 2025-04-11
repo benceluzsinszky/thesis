@@ -1,9 +1,10 @@
 import requests
 from datetime import datetime, timezone
 import threading
+from threading import Lock
 import pandas as pd
 import logging
-
+import copy
 from Args import (
     use_endpoint,
     use_skip,
@@ -14,6 +15,8 @@ from Args import (
 
 from FileIO import load_config_file, write_to_csv
 
+REQUEST_COUNTER = {"value": 0}
+LOCK = Lock()
 
 def get_user_session(email: str, password: str) -> str:
     url = f"{BASE_URL}/session/{email}"
@@ -40,9 +43,14 @@ def send_request(
 ) -> datetime | None:
     try:
         url = f"{BASE_URL}{endpoint}?session={SESSION}"
+       
         if "query" in parameters:
             url += f"&{parameters['query']}"
         headers = {"Content-Type": f"application/{content_type}"}
+
+        # if "value" in parameters:
+        #     REQUEST_COUNTER["value"] += 1
+        #     parameters["value"] = f"{REQUEST_COUNTER['value']}s"
         if "session_update" in endpoint:
             parameters["id"] = RW_SESSION_ID
         request_method = getattr(requests, request_method.lower())
@@ -61,16 +69,24 @@ def send_request(
         return [datetime.now(timezone.utc), "N/A", endpoint]
 
 
+
 def handle_single_endpoint(idx) -> dict:
     def thread_request():
         try:
             barrier.wait()
 
+            thread_parameters = copy.deepcopy(parameters)
+
+            # ✅ Safe increment using lock
+            with LOCK:
+                REQUEST_COUNTER["value"] += 1
+                thread_parameters["value"] = f"{REQUEST_COUNTER['value']}s"
+
             response_data = send_request(
                 endpoint=path,
                 request_method=request_method,
                 content_type=content_type,
-                parameters=parameters,
+                parameters=thread_parameters,
             )
 
             response_datas.append(response_data)

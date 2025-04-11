@@ -7,14 +7,9 @@
       "id": 0,
       "path": "/upload_user_activity_data",
       "method": "POST",
-      "content_type": "json",
+      "content_type": "x-www-form-urlencoded",
       "parameters": {
-        "time": "2016-05-05T10:11:12",
-        "event": "User Read Article",
-        "value": "300s",
-        "extra_data": {
-          "article_source": 2
-        }
+        "value": "0s"
       }
     },
     {
