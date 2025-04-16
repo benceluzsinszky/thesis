@@ -290,10 +290,11 @@ def latency_and_throughput_curve(df: pd.DataFrame):
         marker="^",
         label="Throughput [TPS]",
     )
-    ax1.set_xlabel("Concurrent Users (Load)", fontsize=14)
-    ax1.set_ylabel("Throughput [TPS]", fontsize=14)
-    ax1.tick_params(axis="y")
-    ax1.tick_params(axis="both", which="major", labelsize=12)
+    ax1.set_xlabel("Concurrent Users (Load Point)", fontsize=24, labelpad=20)
+    ax1.set_ylabel("Throughput [TPS]", fontsize=24, labelpad=20)
+    ax1.tick_params(axis="both", which="major", labelsize=20)
+    ax1.set_xlim(left=0)
+    ax1.set_ylim(bottom=0)
 
     # Create a second y-axis for latency
     ax2 = ax1.twinx()
@@ -304,16 +305,17 @@ def latency_and_throughput_curve(df: pd.DataFrame):
         marker="s",
         label="Latency [s]",
     )
-    ax2.set_ylabel("Latency [s]", fontsize=14)
-    ax2.tick_params(axis="y")
+    ax2.set_ylabel("Latency [s]", fontsize=24, labelpad=20)
+    ax2.tick_params(axis="y", which="major", labelsize=20)
 
     # Add grid and title
     ax1.grid(True)
-    plt.title("Throughput and Latency vs. Concurrent Users", fontsize=16)
 
     # Add legends for both axes
     ax1.legend(loc="upper left")
-    ax2.legend(loc="upper right")
+    ax2.legend(loc="upper left", bbox_to_anchor=(0, 0.95))
+
+    plt.tight_layout()
 
     # Show the plot
     plt.show()
@@ -323,11 +325,10 @@ if __name__ == "__main__":
     AVAILABLE_LANGUAGES = "available_languages_gunicorn_w_4.csv"
     EXERCISE_SESSION_UPDATE = "exercise_session_update_gunicorn_w_4.csv"
     READING_SESSION_UPDATE = "reading_session_update_gunicorn_w_4.csv"
-    # TODO: Rerun reading_session_update!!!
     UPLOAD_USER_ACTIVITY_DATA = "upload_user_activity_data_gunicorn_w_4.csv"
     USER_ARTICLES_RECOMMENDED = "user_articles_recommended_gunicorn_w_4.csv"
 
-    file_to_visualize = UPLOAD_USER_ACTIVITY_DATA
+    file_to_visualize = READING_SESSION_UPDATE
 
     path = "./results/" + file_to_visualize
 

@@ -39,7 +39,7 @@ print(df.head(15))
 
 # Get the top 5 values in normalized length
 df_under_threshold = df[df["latency"] < LATENCY_THRESHOLD]
-top_5 = df_under_threshold.head(5)
+top_5 = df_under_threshold.head(15)
 
 plt.figure(figsize=(10, 6))
 plt.scatter(df["latency"], df["hits"], color="blue", s=10)
