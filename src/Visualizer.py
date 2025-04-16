@@ -275,7 +275,7 @@ def requests_sent_time(df: pd.DataFrame, load: int) -> None:
     plt.show()
 
 
-def plot_latency_and_throughput(df: pd.DataFrame):
+def latency_and_throughput_curve(df: pd.DataFrame):
     throughput_df = create_throughput_df(df)
     latency_df = create_latency_df(df)
 
@@ -320,22 +320,27 @@ def plot_latency_and_throughput(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    # file = "./results/available_languages_gunicorn_w_4_2.csv"
-    # file = "./results/exercise_session_update_gunicorn_w_4_2.csv"
-    # file = "./results/reading_session_update_gunicorn_w_4.csv"
-    # file = "./results/upload_user_activity_data_gunicorn_w_4_2.csv"
-    # file = "./results/user_articles_recommended_gunicorn_w_4_2.csv"
-    file = "./results/exercise_session_update_gunicorn_w_4_final.csv"
+    AVAILABLE_LANGUAGES = "available_languages_gunicorn_w_4.csv"
+    EXERCISE_SESSION_UPDATE = "exercise_session_update_gunicorn_w_4.csv"
+    READING_SESSION_UPDATE = "reading_session_update_gunicorn_w_4.csv"
+    # TODO: Rerun reading_session_update!!!
+    UPLOAD_USER_ACTIVITY_DATA = "upload_user_activity_data_gunicorn_w_4.csv"
+    USER_ARTICLES_RECOMMENDED = "user_articles_recommended_gunicorn_w_4.csv"
 
-    df = pd.read_csv(file)
+    file_to_visualize = UPLOAD_USER_ACTIVITY_DATA
 
-    # plot_latency_and_throughput(df)
+    path = "./results/" + file_to_visualize
+
+    df = pd.read_csv(path)
+
+    latency_and_throughput_curve(df)
+    # latency_histogram_3d(df)
+
     # throughput(df)
     # latency_curve_avg(df)
     # latency_curve_median(df)
     # latency_histogram_of_load(df, 2000)
     # latency_histogram_sum(df)
-    latency_histogram_3d(df)
 
     # check_latency(df, 355)
     # requests_sent_time(df, 1500)
