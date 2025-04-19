@@ -1,11 +1,11 @@
 {
-  "base_url": "http://65.21.226.106:8080/",
+  "base_url": "http://65.21.226.106:8080",
   "email": "test@itu.dk",
   "password": "tester",
   "endpoints": [
     {
       "id": 0,
-      "path": "/upload_user_activity_data",
+      "path": "upload_user_activity_data",
       "method": "POST",
       "content_type": "x-www-form-urlencoded",
       "parameters": {
@@ -14,31 +14,33 @@
     },
     {
       "id": 1,
-      "path": "/reading_session_update",
+      "path": "reading_session_update",
       "method": "POST",
       "content_type": "x-www-form-urlencoded",
       "parameters": {}
     },
     {
       "id": 2,
-      "path": "/exercise_session_update",
+      "path": "exercise_session_update",
       "method": "POST",
       "content_type": "x-www-form-urlencoded",
       "parameters": {}
     },
     {
       "id": 3,
-      "path": "/user_articles/recommended",
+      "path": "user_articles/recommended",
       "method": "GET",
       "content_type": "json",
       "parameters": {}
     },
     {
       "id": 4,
-      "path": "/user_article?article_id=2859118",
+      "path": "user_article",
       "method": "GET",
       "content_type": "json",
-      "parameters": {}
+      "parameters": {
+        "query": "article_id=2859118"
+      }
     }
   ]
 }

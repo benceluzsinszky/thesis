@@ -45,7 +45,7 @@ def send_request(
     parameters: dict,
 ) -> datetime | None:
     try:
-        url = f"{BASE_URL}{endpoint}?session={SESSION}"
+        url = f"{BASE_URL}/{endpoint}?session={SESSION}"
 
         if "query" in parameters:
             url += f"&{parameters['query']}"
