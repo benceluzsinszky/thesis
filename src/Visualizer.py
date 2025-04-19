@@ -321,20 +321,54 @@ def latency_and_throughput_curve(df: pd.DataFrame):
     plt.show()
 
 
-if __name__ == "__main__":
-    AVAILABLE_LANGUAGES = "available_languages_gunicorn_w_4.csv"
-    EXERCISE_SESSION_UPDATE = "exercise_session_update_gunicorn_w_4.csv"
-    READING_SESSION_UPDATE = "reading_session_update_gunicorn_w_4.csv"
-    UPLOAD_USER_ACTIVITY_DATA = "upload_user_activity_data_gunicorn_w_4.csv"
-    USER_ARTICLES_RECOMMENDED = "user_articles_recommended_gunicorn_w_4.csv"
+def compare_throughput(files: list[str] = None) -> None:
+    plt.figure(figsize=(12, 8))  # Create a new figure
+    markers = ["o", "s", "^", "D", "v", "P", "*"]
+    for idx, file in enumerate(files):
+        path = "./results/" + file
+        df = pd.read_csv(path)
+        throughput_df = create_throughput_df(df)
+        label = "Apache"
+        if "w_4" in file:
+            label = "Gunicorn - 4 Workers"
+        elif "w_8" in file:
+            label = "Gunicorn - 8 Workers"
+        elif "w_16" in file:
+            label = "Gunicorn - 16 Workers"
+        plt.plot(
+            throughput_df["load"],
+            throughput_df["throughput"],
+            label=label,
+            alpha=0.8,
+            marker=markers[idx % len(markers)],
+        )
 
-    file_to_visualize = READING_SESSION_UPDATE
+    plt.xlabel("Concurrent Users (Load)", fontsize=18)
+    plt.ylabel("Throughput [TPS]", fontsize=18)
+    plt.title("Throughput Comparison", fontsize=20)
+    plt.tick_params(axis="both", which="major", labelsize=16)
+    plt.legend(loc="upper left")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
+if __name__ == "__main__":
+    AVAILABLE_LANGUAGES_G4 = "available_languages_gunicorn_w_4.csv"
+    EXERCISE_SESSION_UPDATE_A = "exercise_session_update_apache_final.csv"
+    EXERCISE_SESSION_UPDATE_G4 = "exercise_session_update_gunicorn_w_4.csv"
+    READING_SESSION_UPDATE_G4 = "reading_session_update_gunicorn_w_4.csv"
+    UPLOAD_USER_ACTIVITY_DATA_G4 = "upload_user_activity_data_gunicorn_w_4.csv"
+    USER_ARTICLES_RECOMMENDED_G4 = "user_articles_recommended_gunicorn_w_4.csv"
+
+    file_to_visualize = EXERCISE_SESSION_UPDATE_A
 
     path = "./results/" + file_to_visualize
 
     df = pd.read_csv(path)
 
-    latency_and_throughput_curve(df)
+    # latency_and_throughput_curve(df)
+    compare_throughput([EXERCISE_SESSION_UPDATE_A, EXERCISE_SESSION_UPDATE_G4])
     # latency_histogram_3d(df)
 
     # throughput(df)
