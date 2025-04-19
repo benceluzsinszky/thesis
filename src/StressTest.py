@@ -169,6 +169,8 @@ if __name__ == "__main__":
         users = get_number_of_threads()
         endpoint_id = i["id"]
         path = i["path"]
+        if "?" in path:
+            path = path.split("?")[0]
         file_name_path = path[1:].replace("/", "_")
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file_name = f"{file_name_path}_{now}.csv"

@@ -1,5 +1,5 @@
 {
-  "base_url": "https://api.zeeguu.dev/",
+  "base_url": "http://65.21.226.106:8080/",
   "email": "test@itu.dk",
   "password": "tester",
   "endpoints": [
@@ -35,7 +35,7 @@
     },
     {
       "id": 4,
-      "path": "/available_languages",
+      "path": "/user_article?article_id=2859118",
       "method": "GET",
       "content_type": "json",
       "parameters": {}
