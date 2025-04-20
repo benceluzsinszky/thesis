@@ -171,7 +171,7 @@ if __name__ == "__main__":
         path = i["path"]
         if "?" in path:
             path = path.split("?")[0]
-        file_name_path = path[1:].replace("/", "_")
+        file_name_path = path.replace("/", "_")
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file_name = f"{file_name_path}_{now}.csv"
         LOGGER.info(f"Starting test for endpoint: {path}")
