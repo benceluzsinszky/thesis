@@ -1,43 +1,48 @@
-\subsubsection{/session}
 
-The endpoint is used to log the user in. To be able to access the other endpoints a user session must be initialized, so before each other tests this endpoint is being called.
+The following arguments can be used to configure the test:
+\begin{itemize}
+    \item \texttt{--loop} or \texttt{-l}: The number of times the simulation will run for each load point. Default is 1.
+    \item \texttt{--endpoint} or \texttt{-e}: Use a single endpoint. Provide the index of the endpoint from the config file. Without this argument, the test will run with all endpoints.
+    \item \texttt{--threads} or \texttt{-t}: Run the test with a single, fixed load point. Without this argument, the test will run, until the median response time exceeds 2 seconds.
+    \item \texttt{--skip} or \texttt{-s}: Increment load point by 10 instead of 1 after each iteration.
+\end{itemize}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{get_session_sum_histogram.png}
-    \caption{\texttt{GET /session} Summarized Histogram}
-    \label{fig:session-sum}
-\end{figure}
+The following pseudocode outlines the logic\footnote{\url{https://github.com/benceluzsinszky/thesis/blob/main/src/StressTest.py\#L155}} used in the simulator to handle these inputs and execute the appropriate actions:
 
-\begin{figure}[ht]
-    \centering
-    \begin{subfigure}[b]{0.45\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{get_session_1_user.png}
-        \caption{\texttt{GET /session} 1 User}
-        \label{fig:session-1-user}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{get_session_10_user.png}
-        \caption{\texttt{GET /session} 10 Users}
-        \label{fig:session-10-user}
-    \end{subfigure}
-    \vfill
-    \begin{subfigure}[b]{0.45\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{get_session_25_user.png}
-        \caption{\texttt{GET /session} 25 Users}
-        \label{fig:session-25-user}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{get_session_30_user.png}
-        \caption{\texttt{GET /session} 30 Users}
-        \label{fig:session-30-user}
-    \end{subfigure}
-    \caption{Summarized Histograms for \texttt{GET /session}}
-    \label{fig:session-sum-all}
-\end{figure}
+\vspace{10pt}
+
+\begin{algorithmic}
+\For{\texttt{i in endpoints}} \Comment{single endpoint with arg \texttt{-e}}
+    \State \texttt{loadPoint = 1}
+    \While{\texttt{medianLatency < 2s}}
+        \State \texttt{df = pd.DataFrame()}
+        \For{\texttt{i = 0}, \textbf{while \texttt{i < numberOfLoops}}, \texttt{i++}}
+        \Comment{arg \texttt{-l}}
+            \State \texttt{handle\_single\_endpoint()}
+            \State \texttt{df = pd.concat(...)} \Comment{store results after each loop}
+        \EndFor
+        \State \texttt{write\_to\_csv()}
+        \Comment{write new data to end of result file}
+        \State \texttt{loadPoint++}
+        \Comment{\texttt{loadPoint += 10} with arg -s}
+        \If{\texttt{not check\_median\_latency()}}
+            \State \texttt{break}
+            \Comment{break loop if latency is high}
+        \EndIf
+        \If{\texttt{use\_single\_load\_point()}}
+            \State \texttt{break}
+            \Comment{break loop with arg -t}
+        \EndIf
+    \EndWhile
+\EndFor
+\end{algorithmic}
+
+\vspace{10pt}
+
+The program iterates through every endpoint, or in the case of \texttt{-e} argument, only the chosen one.
+The inner loop increments the load point until the median latency exceeds 2 seconds, 
+or the user specifies a single load point with the \texttt{-t} argument.
+The innermost loop runs the simulation for the specified number of loops, specified by the \texttt{-l}
+argument. The results are stored in a dataframe after each loop and written to a \texttt{.csv} file 
+at the end each load point iteration. This way there is no excess data stored in RAM, and 
+the test can be stopped at any times and the latest endpoint can be analyzed.
