@@ -61,7 +61,7 @@ python src/StressTest.py -l 20
 The stress test can take a long time to complete, so it is recommended to run it in the background. To do this, use the following command:
 
 ```bash
-nohup python StressTest.py -l 5 > stress_log.txt 2>&1 &
+nohup python StressTest.py -l 20 > stress_log.txt 2>&1 &
 ```
 
 ## Visualizing the Results
