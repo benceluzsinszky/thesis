@@ -32,7 +32,10 @@ def create_throughput_df(df: pd.DataFrame):
             throughput_data.append((load, throughput))
 
     throughput_df = pd.DataFrame(throughput_data, columns=["load", "throughput"])
+
+    # smoothing
     # throughput_df["throughput"] = throughput_df["throughput"].ewm(span=25).mean()
+
     throughput_df = throughput_df.sort_values(by="load")
 
     return throughput_df
@@ -354,17 +357,21 @@ def compare_throughput(files: list[str] = None) -> None:
 
 
 if __name__ == "__main__":
-    AVAILABLE_LANGUAGES_G4 = "available_languages_gunicorn_w_4.csv"
-    EXERCISE_SESSION_UPDATE_A = "exercise_session_update_apache.csv"
-    EXERCISE_SESSION_UPDATE_G4 = "exercise_session_update_gunicorn_w_4.csv"
-    EXERCISE_SESSION_UPDATE_G8 = "exercise_session_update_gunicorn_w_8.csv"
-    READING_SESSION_UPDATE_A = "reading_session_update_apache.csv"
-    READING_SESSION_UPDATE_G4 = "reading_session_update_gunicorn_w_4.csv"
-    READING_SESSION_UPDATE_G8 = "reading_session_update_gunicorn_w_8.csv"
-    UPLOAD_USER_ACTIVITY_DATA_G4 = "upload_user_activity_data_gunicorn_w_4.csv"
-    USER_ARTICLES_RECOMMENDED_G4 = "user_articles_recommended_gunicorn_w_4.csv"
+    LANGUAGES = "available_languages"
+    EXERCISE = "exercise_session_update"
+    READING = "reading_session_update"
+    USER_ACTIVITY = "upload_user_activity_data"
+    USER_ARTICLE = "user_article"
+    RECOMMENDED = "user_articles_recommended"
 
-    file_to_visualize = EXERCISE_SESSION_UPDATE_A
+    APACHE = "apache"
+    G4 = "gunicorn_w_4"
+    G8 = "gunicorn_w_8"
+    G16 = "gunicorn_w_16"
+
+    endpoint = USER_ACTIVITY
+
+    file_to_visualize = f"{endpoint}_{G4}.csv"
 
     path = "./results/" + file_to_visualize
 
@@ -373,9 +380,10 @@ if __name__ == "__main__":
     # latency_and_throughput_curve(df)
     compare_throughput(
         [
-            READING_SESSION_UPDATE_A,
-            READING_SESSION_UPDATE_G4,
-            READING_SESSION_UPDATE_G8,
+            f"{endpoint}_{APACHE}.csv",
+            f"{endpoint}_{G4}.csv",
+            f"{endpoint}_{G8}.csv",
+            f"{endpoint}_{G16}.csv",
         ]
     )
     # latency_histogram_3d(df)
