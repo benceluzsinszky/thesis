@@ -377,15 +377,15 @@ if __name__ == "__main__":
 
     df = pd.read_csv(path)
 
+    multiple_files_to_visualize = [
+        f"{endpoint}_{APACHE}.csv",
+        f"{endpoint}_{G4}.csv",
+        f"{endpoint}_{G8}.csv",
+        f"{endpoint}_{G16}.csv",
+    ]
+
     # latency_and_throughput_curve(df)
-    compare_throughput(
-        [
-            f"{endpoint}_{APACHE}.csv",
-            f"{endpoint}_{G4}.csv",
-            f"{endpoint}_{G8}.csv",
-            f"{endpoint}_{G16}.csv",
-        ]
-    )
+    compare_throughput(multiple_files_to_visualize)
     # latency_histogram_3d(df)
 
     # throughput(df)
